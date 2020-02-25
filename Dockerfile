@@ -12,3 +12,9 @@ RUN rm libtensorflow.tar.gz
 # Configure the linker
 RUN ldconfig
 
+# Download Rustup Installer
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+
+# Add rust binaries to the path
+RUN echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
+
