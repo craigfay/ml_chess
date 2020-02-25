@@ -18,3 +18,8 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 # Add rust binaries to the path
 RUN echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
 
+FROM rust:latest
+
+# Install cbindgen, which generates C bindings for Rust
+RUN cargo install --force cbindgen
+
