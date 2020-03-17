@@ -22,3 +22,9 @@ RUN rm libtensorflow.tar.gz
 
 # Configure the linker
 RUN ldconfig
+
+# Install Vim
+RUN apt update
+RUN apt install vim
+
+
