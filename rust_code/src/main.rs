@@ -1,5 +1,8 @@
+use chess_engine::GameState;
+
 fn main() {
-    println!("Hello, world!");
+    let state = GameState::new();
+    println!("{}", state.to_string());
 }
 
 #[no_mangle]
