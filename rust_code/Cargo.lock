@@ -6,7 +6,7 @@ version = "0.1.0"
 source = "git+https://github.com/craigfay/chess-engine#d89aa50dfcb9900fc0fdc13a8da4dc280894d308"
 
 [[package]]
-name = "rust_src"
+name = "rust_code"
 version = "0.1.0"
 dependencies = [
  "chess-engine",

@@ -1,5 +1,5 @@
 [package]
-name = "rust_src"
+name = "rust_code"
 version = "0.1.0"
 authors = ["user"]
 edition = "2018"
@@ -9,9 +9,7 @@ edition = "2018"
 [dependencies]
 chess-engine = { git = "https://github.com/craigfay/chess-engine" }
 
-# [lib]
-# name = "example_crate"
-# crate-type = ["cdylib"]
-
-
+[lib]
+name = "chess_ml"
+crate-type = ["cdylib"]
 
