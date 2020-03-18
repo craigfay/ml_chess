@@ -6,6 +6,9 @@
 * Execute a shell inside the container: `docker run -it --rm -v $(pwd):/app -w /app tensorflow_c_rust bash`
 
 # Commands (from inside container)
-* Compile binary: `gcc c_code/main.c -ltensorflow -o target/main`
+* Compile Rust (from inside crate): `cargo build` 
+  * This will produce the static library (archive) file: `/rust_code/target/debug'libml_chess.a`
+* Create C header file from rust lib `cbindgen --output /usr/local/include/ml_chess/c_api.h <path_to_crate>`
+* Compile binary: `gcc c_code/main.c rust_code/target/debug/libml_chess.a -ltensorflow -ldl -lpthread -o target/main`
 * Execute binary: `./target/main`
 
