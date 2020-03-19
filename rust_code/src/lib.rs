@@ -15,11 +15,15 @@ use chess_engine::{
     },
 };
 
-
-
 pub extern "C" fn bitboard() -> Vec<i32> {
+    let result = vec![];
+
     let state = GameState::new();
-    vec![1,2,3]
+    for index in 0..64 {
+        let maybe_piece = state.squares[index];
+        result.push(convert_piece_to_int(maybe_piece);
+    }
+    result
 }
 
 #[test]
@@ -89,8 +93,6 @@ fn convert_piece_to_int_test() {
 
     let piece = Piece { color: Black, name: King };
     assert_eq!(12, convert_piece_to_int(Some(piece)));
-
-
 }
 
 
