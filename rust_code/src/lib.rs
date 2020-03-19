@@ -1,3 +1,4 @@
+
 use chess_engine::{
     GameState,
     Piece,
@@ -15,33 +16,37 @@ use chess_engine::{
     },
 };
 
-pub extern "C" fn gamestate_as_ints() -> Vec<i32> {
-    let mut result = vec![];
+// impl Eq for Array {
+    // fn eq 
+//}
+
+pub extern "C" fn gamestate_as_ints() -> [i32; 70] {
+    let mut result = [0; 70];
 
     let state = GameState::new();
     for index in 0..64 {
         let maybe_piece = state.squares[index];
-        result.push(piece_as_int(maybe_piece));
+        result[index] = piece_as_int(maybe_piece);
     }
 
-    if state.to_move == White { result.push(0) }
-    else { result.push(1) }
+    if state.to_move == White { result[64] = 0 }
+    else { result[64] = 1 }
 
-    if state.white_can_castle_kingside { result.push(1) }
-    else { result.push(0) }
+    if state.white_can_castle_kingside { result[65] = 1 }
+    else { result[65] = 0 }
 
-    if state.white_can_castle_queenside { result.push(1) }
-    else { result.push(0) }
+    if state.white_can_castle_queenside { result[66] = 1 }
+    else { result[66] = 0 }
 
-    if state.black_can_castle_kingside { result.push(1) }
-    else { result.push(0) }
+    if state.black_can_castle_kingside { result[67] = 1 }
+    else { result[67] = 0 }
 
-    if state.black_can_castle_queenside { result.push(1) }
-    else { result.push(0) }
+    if state.black_can_castle_queenside { result[68] = 1 }
+    else { result[68] = 0 }
 
     match state.en_passant_square {
-        None => result.push(0),
-        Some(index) => result.push(index as i32 + 1),
+        None => result[69] = 0,
+        Some(index) => result[69] = index as i32 + 1,
     }
 
     result
@@ -50,9 +55,13 @@ pub extern "C" fn gamestate_as_ints() -> Vec<i32> {
 #[test]
 fn gamestate_as_ints_test() {
     let ints = gamestate_as_ints();
-    let expected = vec![4, 3, 2, 5, 6, 2, 3, 4, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 7, 7, 7, 10, 9, 8, 11, 12, 8, 9, 10, 0, 1, 1, 1, 1, 0];
+    let expected = [4, 3, 2, 5, 6, 2, 3, 4, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 7, 7, 7, 10, 9, 8, 11, 12, 8, 9, 10, 0, 1, 1, 1, 1, 0];
+    
+    for index in 0..expected.len() {
+        assert_eq!(ints[index], expected[index]);
+    }
 
-    assert_eq!(ints, expected);
+    assert_eq!(ints.len(), 70);
 }
 
 fn piece_as_int(maybe_piece: Option<Piece>) -> i32 {
@@ -117,7 +126,6 @@ fn piece_as_int_test() {
     let piece = Piece { color: Black, name: King };
     assert_eq!(12, piece_as_int(Some(piece)));
 }
-
 
 #[no_mangle]
 pub extern "C" fn sum(a: i32, b: i32) -> i32 {
