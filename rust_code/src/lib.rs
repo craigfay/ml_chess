@@ -39,13 +39,18 @@ pub extern "C" fn gamestate_as_ints() -> Vec<i32> {
     if state.black_can_castle_queenside { result.push(1) }
     else { result.push(0) }
 
+    match state.en_passant_square {
+        None => result.push(0),
+        Some(index) => result.push(index as i32 + 1),
+    }
+
     result
 }
 
 #[test]
 fn gamestate_as_ints_test() {
     let ints = gamestate_as_ints();
-    let expected = vec![4, 3, 2, 5, 6, 2, 3, 4, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 7, 7, 7, 10, 9, 8, 11, 12, 8, 9, 10, 0, 1, 1, 1, 1];
+    let expected = vec![4, 3, 2, 5, 6, 2, 3, 4, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 7, 7, 7, 10, 9, 8, 11, 12, 8, 9, 10, 0, 1, 1, 1, 1, 0];
 
     assert_eq!(ints, expected);
 }
