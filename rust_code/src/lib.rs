@@ -20,7 +20,7 @@ use chess_engine::{
     // fn eq 
 //}
 
-pub extern "C" fn gamestate_as_ints() -> [i32; 70] {
+pub extern "C" fn gamestate_as_ints() -> [i8; 70] {
     let mut result = [0; 70];
 
     let state = GameState::new();
@@ -46,7 +46,7 @@ pub extern "C" fn gamestate_as_ints() -> [i32; 70] {
 
     match state.en_passant_square {
         None => result[69] = 0,
-        Some(index) => result[69] = index as i32 + 1,
+        Some(index) => result[69] = index as i8 + 1,
     }
 
     result
@@ -64,7 +64,7 @@ fn gamestate_as_ints_test() {
     assert_eq!(ints.len(), 70);
 }
 
-fn piece_as_int(maybe_piece: Option<Piece>) -> i32 {
+fn piece_as_int(maybe_piece: Option<Piece>) -> i8 {
     match maybe_piece {
         None => 0,
         Some(piece) => {
@@ -128,7 +128,7 @@ fn piece_as_int_test() {
 }
 
 #[no_mangle]
-pub extern "C" fn sum(a: i32, b: i32) -> i32 {
+pub extern "C" fn sum(a: i8, b: i8) -> i8 {
     a + b
 }
 
