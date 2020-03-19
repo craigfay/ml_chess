@@ -20,10 +20,9 @@ use chess_engine::{
     // fn eq 
 //}
 
-pub extern "C" fn gamestate_as_ints() -> [i8; 70] {
+pub extern "C" fn gamestate_as_ints(state: &GameState) -> [i8; 70] {
     let mut result = [0; 70];
 
-    let state = GameState::new();
     for index in 0..64 {
         let maybe_piece = state.squares[index];
         result[index] = piece_as_int(maybe_piece);
@@ -54,7 +53,10 @@ pub extern "C" fn gamestate_as_ints() -> [i8; 70] {
 
 #[test]
 fn gamestate_as_ints_test() {
-    let ints = gamestate_as_ints();
+
+    let state = GameState::new();
+    let ints = gamestate_as_ints(&state);
+
     let expected = [4, 3, 2, 5, 6, 2, 3, 4, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 7, 7, 7, 10, 9, 8, 11, 12, 8, 9, 10, 0, 1, 1, 1, 1, 0];
     
     for index in 0..expected.len() {
