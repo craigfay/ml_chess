@@ -11,5 +11,5 @@ chess-engine = { git = "https://github.com/craigfay/chess-engine" }
 
 [lib]
 name = "ml_chess"
-crate-type = ["staticlib"]
+crate-type = ["cdylib"]
 
