@@ -24,11 +24,20 @@ pub extern "C" fn gamestate_as_ints() -> Vec<i32> {
         result.push(piece_as_int(maybe_piece));
     }
 
-    if state.to_move == White {
-        result.push(0);
-    } else {
-        result.push(1);
-    }
+    if state.to_move == White { result.push(0) }
+    else { result.push(1) }
+
+    if state.white_can_castle_kingside { result.push(1) }
+    else { result.push(0) }
+
+    if state.white_can_castle_queenside { result.push(1) }
+    else { result.push(0) }
+
+    if state.black_can_castle_kingside { result.push(1) }
+    else { result.push(0) }
+
+    if state.black_can_castle_queenside { result.push(1) }
+    else { result.push(0) }
 
     result
 }
@@ -36,7 +45,7 @@ pub extern "C" fn gamestate_as_ints() -> Vec<i32> {
 #[test]
 fn gamestate_as_ints_test() {
     let ints = gamestate_as_ints();
-    let expected = vec![4, 3, 2, 5, 6, 2, 3, 4, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 7, 7, 7, 10, 9, 8, 11, 12, 8, 9, 10, 0];
+    let expected = vec![4, 3, 2, 5, 6, 2, 3, 4, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 7, 7, 7, 10, 9, 8, 11, 12, 8, 9, 10, 0, 1, 1, 1, 1];
 
     assert_eq!(ints, expected);
 }
