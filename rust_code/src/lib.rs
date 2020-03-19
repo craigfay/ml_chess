@@ -29,7 +29,9 @@ pub extern "C" fn bitboard() -> Vec<i32> {
 #[test]
 fn bitboard_test() {
     let b = bitboard();
-    assert_eq!(b, vec![1,2,3]);
+    let expected = vec![4, 3, 2, 5, 6, 2, 3, 4, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 7, 7, 7, 10, 9, 8, 11, 12, 8, 9, 10];
+
+    assert_eq!(b, expected);
 }
 
 fn convert_piece_to_int(maybe_piece: Option<Piece>) -> i32 {
