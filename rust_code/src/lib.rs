@@ -16,12 +16,12 @@ use chess_engine::{
 };
 
 pub extern "C" fn bitboard() -> Vec<i32> {
-    let result = vec![];
+    let mut result = vec![];
 
     let state = GameState::new();
     for index in 0..64 {
         let maybe_piece = state.squares[index];
-        result.push(convert_piece_to_int(maybe_piece);
+        result.push(convert_piece_to_int(maybe_piece));
     }
     result
 }
