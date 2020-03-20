@@ -31,7 +31,9 @@ RUN apt install software-properties-common -y
 RUN add-apt-repository ppa:deadsnakes/ppa -y
 RUN apt install python3.7 -y
 
+# Install Pip
+RUN apt install python3-pip -y
 
-
-
+# Install Tensorflow
+RUN pip3 install tensorflow
 
