@@ -16,7 +16,7 @@ use chess_engine::{
     },
 };
 
-pub extern "C" fn gamestate_as_ints(state: &GameState) -> [i8; 70] {
+pub extern "C" fn gamestate_as_ints(state: &GameState) -> [i32; 70] {
     let mut result = [0; 70];
 
     for index in 0..64 {
@@ -41,13 +41,13 @@ pub extern "C" fn gamestate_as_ints(state: &GameState) -> [i8; 70] {
 
     match state.en_passant_square {
         None => result[69] = 0,
-        Some(index) => result[69] = index as i8 + 1,
+        Some(index) => result[69] = index as i32 + 1,
     }
 
     result
 }
 
-fn piece_as_int(maybe_piece: Option<Piece>) -> i8 {
+fn piece_as_int(maybe_piece: Option<Piece>) -> i32 {
     match maybe_piece {
         None => 0,
         Some(piece) => {
@@ -111,14 +111,18 @@ fn piece_as_int_test() {
 }
 
 #[no_mangle]
-pub extern "C" fn default_gamestate_vector() -> [i8; 70] {
+pub extern "C" fn fill_array_with_gamestate(arr: &mut [i32; 70]) {
     let state = GameState::new();
-    gamestate_as_ints(&state)
+    let gs = gamestate_as_ints(&state);
+    for index in 0..70 {
+        arr[index] = gs[index];
+    }
 }
 
 #[test]
-fn default_gamestate_vector_test() {
-    let gs = default_gamestate_vector();
+fn fill_array_with_gamestate_test() {
+    let arr = [0; 70];
+    let gs = fill_array_with_gamestate(arr);
 
     let expected = [4, 3, 2, 5, 6, 2, 3, 4, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 7, 7, 7, 10, 9, 8, 11, 12, 8, 9, 10, 0, 1, 1, 1, 1, 0];
     
@@ -126,12 +130,5 @@ fn default_gamestate_vector_test() {
     for index in 0..expected.len() {
         assert_eq!(gs[index], expected[index]);
     }
-}
-
-
-
-#[no_mangle]
-pub extern "C" fn sum(a: i8, b: i8) -> i8 {
-    a + b
 }
 

@@ -1,5 +1,3 @@
-#! /usr/bin/bash
-
 # Compile Rust Crate to shared library
 cd /app/rust_code
 cargo build
