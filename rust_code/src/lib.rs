@@ -26,7 +26,7 @@ pub fn enumerate_legal_numerical_gamestates(ints: NumericGameState) -> Vec<Numer
     let mut result = vec![];
     
     for state in next_states {
-        result.push(gamestate_as_ints(&state));
+        result.push(numeralize_gamestate(&state));
     }
 
     result
@@ -64,7 +64,7 @@ pub fn denumeralize_gamestate(ints: NumericGameState) -> GameState {
     state
 }
 
-pub extern "C" fn gamestate_as_ints(state: &GameState) -> NumericGameState {
+pub extern "C" fn numeralize_gamestate(state: &GameState) -> NumericGameState {
     let mut result = [0; 70];
 
     for index in 0..64 {
@@ -179,21 +179,21 @@ fn piece_as_int_test() {
 #[no_mangle]
 pub extern "C" fn fill_array_with_gamestate(arr: &mut NumericGameState) {
     let state = GameState::new();
-    let gs = gamestate_as_ints(&state);
+    let ints = numeralize_gamestate(&state);
     for index in 0..70 {
-        arr[index] = gs[index];
+        arr[index] = ints[index];
     }
 }
 
 #[test]
 fn fill_array_with_gamestate_test() {
-    let mut ngs: NumericGameState = [0; 70];
-    fill_array_with_gamestate(&mut ngs);
+    let mut ints: NumericGameState = [0; 70];
+    fill_array_with_gamestate(&mut ints);
 
     let expected = [4, 3, 2, 5, 6, 2, 3, 4, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 7, 7, 7, 10, 9, 8, 11, 12, 8, 9, 10, 0, 1, 1, 1, 1, 0];
     
     for index in 0..expected.len() {
-        assert_eq!(ngs[index], expected[index]);
+        assert_eq!(ints[index], expected[index]);
     }
 }
 
