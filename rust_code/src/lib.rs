@@ -16,6 +16,16 @@ use chess_engine::{
     },
 };
 
+pub fn ints_as_gamestate(ints: [i32; 70]) -> GameState {
+    let mut state = GameState::with_placements(vec![]);
+
+    for index in 0..64 {
+        state.squares[index] = int_as_piece(ints[index]);
+    }
+
+    state
+}
+
 pub extern "C" fn gamestate_as_ints(state: &GameState) -> [i32; 70] {
     let mut result = [0; 70];
 
@@ -66,6 +76,24 @@ fn piece_as_int(maybe_piece: Option<Piece>) -> i32 {
                 (Black, King) => 12,
             }
         }
+    }
+}
+
+fn int_as_piece(int: i32) -> Option<Piece> {
+    match int {
+        1 => Some(Piece { color: White, name: Pawn }),
+        2 => Some(Piece { color: White, name: Bishop }),
+        3 => Some(Piece { color: White, name: Knight }),
+        4 => Some(Piece { color: White, name: Rook }),
+        5 => Some(Piece { color: White, name: Queen }),
+        6 => Some(Piece { color: White, name: King }),
+        7 => Some(Piece { color: Black, name: Pawn }),
+        8 => Some(Piece { color: Black, name: Bishop }),
+        9 => Some(Piece { color: Black, name: Knight }),
+        10 => Some(Piece { color: Black, name: Rook }),
+        11 => Some(Piece { color: Black, name: Queen }),
+        12 => Some(Piece { color: Black, name: King }),
+        _ => None,
     }
 }
 
@@ -121,8 +149,8 @@ pub extern "C" fn fill_array_with_gamestate(arr: &mut [i32; 70]) {
 
 #[test]
 fn fill_array_with_gamestate_test() {
-    let arr = [0; 70];
-    let gs = fill_array_with_gamestate(arr);
+    let mut gs = [0; 70];
+    fill_array_with_gamestate(&mut gs);
 
     let expected = [4, 3, 2, 5, 6, 2, 3, 4, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 7, 7, 7, 10, 9, 8, 11, 12, 8, 9, 10, 0, 1, 1, 1, 1, 0];
     
