@@ -17,7 +17,9 @@ use chess_engine::{
     legal_next_states,
 };
 
-pub fn legal_next_gamestates_from_ints(ints: [i32; 70]) -> Vec<[i32; 70]> {
+type NumericGameState = [i32; 70];
+
+pub fn legal_next_gamestates_from_ints(ints: NumericGameState) -> Vec<NumericGameState> {
     let current_state = ints_as_gamestate(ints);
     let next_states = legal_next_states(&current_state);
 
@@ -30,7 +32,7 @@ pub fn legal_next_gamestates_from_ints(ints: [i32; 70]) -> Vec<[i32; 70]> {
     result
 }
 
-pub fn ints_as_gamestate(ints: [i32; 70]) -> GameState {
+pub fn ints_as_gamestate(ints: NumericGameState) -> GameState {
     let mut state = GameState::with_placements(vec![]);
 
     for index in 0..64 {
@@ -62,7 +64,7 @@ pub fn ints_as_gamestate(ints: [i32; 70]) -> GameState {
     state
 }
 
-pub extern "C" fn gamestate_as_ints(state: &GameState) -> [i32; 70] {
+pub extern "C" fn gamestate_as_ints(state: &GameState) -> NumericGameState {
     let mut result = [0; 70];
 
     for index in 0..64 {
@@ -175,7 +177,7 @@ fn piece_as_int_test() {
 }
 
 #[no_mangle]
-pub extern "C" fn fill_array_with_gamestate(arr: &mut [i32; 70]) {
+pub extern "C" fn fill_array_with_gamestate(arr: &mut NumericGameState) {
     let state = GameState::new();
     let gs = gamestate_as_ints(&state);
     for index in 0..70 {
@@ -185,14 +187,13 @@ pub extern "C" fn fill_array_with_gamestate(arr: &mut [i32; 70]) {
 
 #[test]
 fn fill_array_with_gamestate_test() {
-    let mut gs = [0; 70];
-    fill_array_with_gamestate(&mut gs);
+    let mut ngs: NumericGameState = [0; 70];
+    fill_array_with_gamestate(&mut ngs);
 
     let expected = [4, 3, 2, 5, 6, 2, 3, 4, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 7, 7, 7, 10, 9, 8, 11, 12, 8, 9, 10, 0, 1, 1, 1, 1, 0];
     
-    assert_eq!(gs.len(), 70);
     for index in 0..expected.len() {
-        assert_eq!(gs[index], expected[index]);
+        assert_eq!(ngs[index], expected[index]);
     }
 }
 
