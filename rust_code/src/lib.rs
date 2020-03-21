@@ -17,6 +17,7 @@ use chess_engine::{
     legal_next_states,
     is_checkmate,
     is_stalemate,
+    relative_material_values,
 };
 
 type NumericGameState = [i32; 70];
@@ -29,6 +30,12 @@ pub fn numeric_gamestate_is_checkmate(ints: NumericGameState) -> bool {
 pub fn numeric_gamestate_is_stalemate(ints: NumericGameState) -> bool {
     let state = denumeralize_gamestate(ints);
     is_stalemate(&state)
+}
+
+pub fn numeric_gamestate_material_values(ints: NumericGameState) -> (i32, i32) {
+    let state = denumeralize_gamestate(ints);
+    let (white_value, black_value) = relative_material_values(&state);
+    (white_value as i32, black_value as i32)
 }
 
 pub fn enumerate_legal_numeric_gamestates(ints: NumericGameState) -> Vec<NumericGameState> {
