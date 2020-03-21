@@ -26,6 +26,11 @@ pub fn numeric_gamestate_is_checkmate(ints: NumericGameState) -> bool {
     is_checkmate(&state)
 }
 
+pub fn numeric_gamestate_is_stalemate(ints: NumericGameState) -> bool {
+    let state = denumeralize_gamestate(ints);
+    is_stalemate(&state)
+}
+
 pub fn enumerate_legal_numeric_gamestates(ints: NumericGameState) -> Vec<NumericGameState> {
     let state = denumeralize_gamestate(ints);
     let next_states = legal_next_states(&state);
