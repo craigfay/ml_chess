@@ -23,6 +23,28 @@ pub fn ints_as_gamestate(ints: [i32; 70]) -> GameState {
         state.squares[index] = int_as_piece(ints[index]);
     }
 
+    if ints[64] == 1 {
+        state.to_move = Black;
+    }
+
+    if ints[65] == 1 {
+        state.white_can_castle_kingside = true;
+    }
+    
+    if ints[66] == 1 {
+        state.white_can_castle_queenside = true;
+    }
+    if ints[67] == 1 {
+        state.black_can_castle_kingside = true;
+    }
+    if ints[68] == 1 {
+        state.black_can_castle_kingside = true;
+    }
+
+    if ints[69] > 0 && ints[69] < 64 {
+        state.en_passant_square = Some(ints[69] as usize);
+    }
+
     state
 }
 
