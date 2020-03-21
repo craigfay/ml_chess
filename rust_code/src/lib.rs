@@ -15,11 +15,18 @@ use chess_engine::{
         White,
     },
     legal_next_states,
+    is_checkmate,
+    is_stalemate,
 };
 
 type NumericGameState = [i32; 70];
 
-pub fn enumerate_legal_numerical_gamestates(ints: NumericGameState) -> Vec<NumericGameState> {
+pub fn numeric_gamestate_is_checkmate(ints: NumericGameState) -> bool {
+    let state = denumeralize_gamestate(ints);
+    is_checkmate(&state)
+}
+
+pub fn enumerate_legal_numeric_gamestates(ints: NumericGameState) -> Vec<NumericGameState> {
     let state = denumeralize_gamestate(ints);
     let next_states = legal_next_states(&state);
 

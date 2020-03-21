@@ -3,7 +3,7 @@
 [[package]]
 name = "chess-engine"
 version = "0.1.0"
-source = "git+https://github.com/craigfay/chess-engine#d89aa50dfcb9900fc0fdc13a8da4dc280894d308"
+source = "git+https://github.com/craigfay/chess-engine#e833ff3da475021e228817517ae6ab3a7af26a00"
 
 [[package]]
 name = "rust_code"
