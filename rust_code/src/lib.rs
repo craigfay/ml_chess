@@ -177,18 +177,18 @@ fn piece_as_int_test() {
 }
 
 #[no_mangle]
-pub extern "C" fn fill_array_with_gamestate(arr: &mut NumericGameState) {
+pub extern "C" fn fill_array_with_new_gamestate(target: &mut NumericGameState) {
     let state = GameState::new();
     let ints = numeralize_gamestate(&state);
     for index in 0..70 {
-        arr[index] = ints[index];
+        target[index] = ints[index];
     }
 }
 
 #[test]
-fn fill_array_with_gamestate_test() {
+fn fill_array_with_new_gamestate_test() {
     let mut ints: NumericGameState = [0; 70];
-    fill_array_with_gamestate(&mut ints);
+    fill_array_with_new_gamestate(&mut ints);
 
     let expected = [4, 3, 2, 5, 6, 2, 3, 4, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 7, 7, 7, 10, 9, 8, 11, 12, 8, 9, 10, 0, 1, 1, 1, 1, 0];
     
