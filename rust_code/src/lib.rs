@@ -14,7 +14,21 @@ use chess_engine::{
         Black,
         White,
     },
+    legal_next_states,
 };
+
+pub fn legal_next_gamestates_from_ints(ints: [i32; 70]) -> Vec<[i32; 70]> {
+    let current_state = ints_as_gamestate(ints);
+    let next_states = legal_next_states(&current_state);
+
+    let mut result = vec![];
+    
+    for ns in next_states {
+        result.push(gamestate_as_ints(&ns));
+    }
+
+    result
+}
 
 pub fn ints_as_gamestate(ints: [i32; 70]) -> GameState {
     let mut state = GameState::with_placements(vec![]);
