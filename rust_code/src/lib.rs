@@ -19,8 +19,8 @@ use chess_engine::{
 
 type NumericGameState = [i32; 70];
 
-pub fn enumerate_legal_numerical_gamestates(ngs: NumericGameState) -> Vec<NumericGameState> {
-    let state = ints_as_gamestate(ngs);
+pub fn enumerate_legal_numerical_gamestates(ints: NumericGameState) -> Vec<NumericGameState> {
+    let state = denumeralize_gamestate(ints);
     let next_states = legal_next_states(&state);
 
     let mut result = vec![];
@@ -32,7 +32,7 @@ pub fn enumerate_legal_numerical_gamestates(ngs: NumericGameState) -> Vec<Numeri
     result
 }
 
-pub fn ints_as_gamestate(ints: NumericGameState) -> GameState {
+pub fn denumeralize_gamestate(ints: NumericGameState) -> GameState {
     let mut state = GameState::with_placements(vec![]);
 
     for index in 0..64 {
