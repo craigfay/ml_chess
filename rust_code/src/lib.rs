@@ -19,14 +19,14 @@ use chess_engine::{
 
 type NumericGameState = [i32; 70];
 
-pub fn legal_next_gamestates_from_ints(ints: NumericGameState) -> Vec<NumericGameState> {
-    let current_state = ints_as_gamestate(ints);
-    let next_states = legal_next_states(&current_state);
+pub fn enumerate_legal_numerical_gamestates(ngs: NumericGameState) -> Vec<NumericGameState> {
+    let state = ints_as_gamestate(ngs);
+    let next_states = legal_next_states(&state);
 
     let mut result = vec![];
     
-    for ns in next_states {
-        result.push(gamestate_as_ints(&ns));
+    for state in next_states {
+        result.push(gamestate_as_ints(&state));
     }
 
     result
