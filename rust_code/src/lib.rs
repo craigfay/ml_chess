@@ -22,23 +22,27 @@ use chess_engine::{
 
 type NumericGameState = [i32; 70];
 
-pub fn numeric_gamestate_is_checkmate(ints: NumericGameState) -> bool {
+#[no_mangle]
+pub extern "C" fn numeric_gamestate_is_checkmate(ints: NumericGameState) -> bool {
     let state = denumeralize_gamestate(ints);
     is_checkmate(&state)
 }
 
-pub fn numeric_gamestate_is_stalemate(ints: NumericGameState) -> bool {
+#[no_mangle]
+pub extern "C" fn numeric_gamestate_is_stalemate(ints: NumericGameState) -> bool {
     let state = denumeralize_gamestate(ints);
     is_stalemate(&state)
 }
 
-pub fn numeric_gamestate_material_values(ints: NumericGameState) -> (i32, i32) {
+#[no_mangle]
+pub extern "C" fn numeric_gamestate_material_values(ints: NumericGameState) -> (i32, i32) {
     let state = denumeralize_gamestate(ints);
     let (white_value, black_value) = relative_material_values(&state);
     (white_value as i32, black_value as i32)
 }
 
-pub fn enumerate_legal_numeric_gamestates(ints: NumericGameState) -> Vec<NumericGameState> {
+#[no_mangle]
+pub extern "C" fn enumerate_legal_numeric_gamestates(ints: NumericGameState) -> Vec<NumericGameState> {
     let state = denumeralize_gamestate(ints);
     let next_states = legal_next_states(&state);
 
@@ -51,7 +55,7 @@ pub fn enumerate_legal_numeric_gamestates(ints: NumericGameState) -> Vec<Numeric
     result
 }
 
-pub fn denumeralize_gamestate(ints: NumericGameState) -> GameState {
+fn denumeralize_gamestate(ints: NumericGameState) -> GameState {
     let mut state = GameState::with_placements(vec![]);
 
     for index in 0..64 {
@@ -83,7 +87,7 @@ pub fn denumeralize_gamestate(ints: NumericGameState) -> GameState {
     state
 }
 
-pub extern "C" fn numeralize_gamestate(state: &GameState) -> NumericGameState {
+fn numeralize_gamestate(state: &GameState) -> NumericGameState {
     let mut result = [0; 70];
 
     for index in 0..64 {
