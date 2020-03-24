@@ -35,10 +35,11 @@ pub extern "C" fn numeric_gamestate_is_stalemate(ints: NumericGameState) -> bool
 }
 
 #[no_mangle]
-pub extern "C" fn numeric_gamestate_material_values(ints: NumericGameState) -> (i32, i32) {
-    let state = denumeralize_gamestate(ints);
+pub extern "C" fn numeric_gamestate_material_values(target: &mut [i32; 2], ints: &NumericGameState) {
+    let state = denumeralize_gamestate(*ints);
     let (white_value, black_value) = relative_material_values(&state);
-    (white_value as i32, black_value as i32)
+    target[0] = white_value as i32;
+    target[1] = black_value as i32;
 }
 
 #[no_mangle]

@@ -10,3 +10,4 @@ cbindgen --output /usr/local/include/ml_chess/c_api.h
 
 # Reconfigure linker
 ldconfig
+

@@ -19,9 +19,29 @@ class GameState:
         answer = libml_chess.numeric_gamestate_is_checkmate(integer_list)
         return bool(answer)
 
+    def is_stalemate(self):
+        # Converting self.vector to an array of C ints
+        integer_list = (c_int * 70)() 
+        for i in range(70):
+            integer_list[i] = self.vector[i]
 
+        answer = libml_chess.numeric_gamestate_is_stalemate(integer_list)
+        return bool(answer)
 
+    def white_vs_black_material(self):
+        # Converting self.vector to an array of C ints
+        integer_list = (c_int * 70)() 
+        for i in range(70):
+            integer_list[i] = self.vector[i]
+
+        answer = (c_int * 2)() 
+        libml_chess.numeric_gamestate_material_values(answer, integer_list)
+        return ctypeslib.as_array(answer)
+        
+    
 gs = GameState()
 print(gs.vector)
 print(gs.is_checkmate())
+print(gs.is_stalemate())
+print(gs.white_vs_black_material())
 
