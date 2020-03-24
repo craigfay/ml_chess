@@ -35,7 +35,7 @@ class GameState:
             integer_list[i] = self.vector[i]
 
         answer = (c_int * 2)() 
-        libml_chess.numeric_gamestate_material_values(answer, integer_list)
+        libml_chess.numeric_gamestate_material_values(integer_list, answer)
         return ctypeslib.as_array(answer)
         
     
