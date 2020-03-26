@@ -1,5 +1,6 @@
 from ctypes import *
 from numpy import *
+from random import Random
 
 libml_chess = cdll.LoadLibrary("libml_chess.so");
 
@@ -37,11 +38,11 @@ class GameState:
         answer = (c_int * 2)() 
         libml_chess.numeric_gamestate_material_values(integer_list, answer)
         return ctypeslib.as_array(answer)
-        
+
+
+def randomInt(min, max):
+    return Random().randrange(min, max)
+
     
 gs = GameState()
-print(gs.vector)
-print(gs.is_checkmate())
-print(gs.is_stalemate())
-print(gs.white_vs_black_material())
 
