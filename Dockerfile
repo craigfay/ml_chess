@@ -37,3 +37,6 @@ RUN apt install python3-pip -y
 # Install Tensorflow
 RUN pip3 install tensorflow
 
+# Install Python Chess
+RUN pip3 install python-chess
+
