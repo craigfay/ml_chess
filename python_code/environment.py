@@ -4,23 +4,23 @@ import numpy
 
 class Environment:
     def __init__(self):
-        self.board = chess.Board()
+        self.__board = chess.Board()
 
     def available_actions(self):
         actions = []
 
-        for move in self.board.legal_moves:
-            self.board.push(move)
+        for move in self.__board.legal_moves:
+            self.__board.push(move)
 
-            new_board_vector = board_to_vector(self.board)
+            new_board_vector = board_to_vector(self.__board)
             actions.append(new_board_vector)
-            self.board.pop()
+            self.__board.pop()
 
         return actions
 
 
     def state(self):
-        return board_to_vector(self.board)
+        return board_to_vector(self.__board)
         
 
 def board_to_vector(board):
