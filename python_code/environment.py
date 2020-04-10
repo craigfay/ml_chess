@@ -7,17 +7,31 @@ class Environment:
         self.board = chess.Board()
 
     def available_actions(self):
-        pass
+        actions = []
+
+        for move in self.board.legal_moves:
+            self.board.push(move)
+
+            new_board_vector = board_to_vector(self.board)
+            actions.append(new_board_vector)
+            self.board.pop()
+
+        return actions
+
 
     def state(self):
-        s = numpy.zeros(64)
-
-        for index in range(64):
-            name = str(self.board.piece_at(index))
-            s[index] = piece_to_int(name)
-
-        return s
+        return board_to_vector(self.board)
         
+
+def board_to_vector(board):
+    vector = numpy.zeros(64)
+
+    for index in range(64):
+        name = str(board.piece_at(index))
+        vector[index] = piece_to_int(name)
+
+    return vector
+
 
 def piece_to_int(name):
     translation = {
@@ -37,6 +51,10 @@ def piece_to_int(name):
     return translation.setdefault(name, 0)
 
 e = Environment()
-print(e.state())
+
+actions = e.available_actions()
+for a in actions:
+    print(a)
+    print()
 
 
