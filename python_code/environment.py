@@ -26,13 +26,15 @@ class Environment:
 
 
     def state(self):
-        return board_to_vector(self.__board)
+        return board_to_tuple(self.__board)
         
 
-def board_to_vector(board):
+def board_to_tuple(board):
     """
-    Convert a chess.Board instance into a vector
-    of floating point numbers.
+    Convert a chess.Board instance into a tuple 
+    of floating point numbers, which is a structure
+    more suitable for processing by machine learning
+    techniques.
     """
     vector = numpy.zeros(64)
 
@@ -40,7 +42,7 @@ def board_to_vector(board):
         name = str(board.piece_at(index))
         vector[index] = piece_to_int(name)
 
-    return vector
+    return tuple(vector)
 
 
 def piece_to_int(name):
@@ -63,12 +65,4 @@ def piece_to_int(name):
         'k': -6,
     }
     return translation.setdefault(name, 0)
-
-e = Environment()
-
-actions = e.available_actions()
-for a in actions:
-    print(a)
-    print()
-
 
