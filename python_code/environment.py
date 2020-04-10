@@ -6,7 +6,13 @@ class Environment:
     def __init__(self):
         self.__board = chess.Board()
 
+    
     def available_actions(self):
+        """
+        Create a list of available actions that can be taken
+        from the current state. The actions themselves are
+        represented as the state vectors they lead to.
+        """
         actions = []
 
         for move in self.__board.legal_moves:
@@ -24,6 +30,10 @@ class Environment:
         
 
 def board_to_vector(board):
+    """
+    Convert a chess.Board instance into a vector
+    of floating point numbers.
+    """
     vector = numpy.zeros(64)
 
     for index in range(64):
@@ -34,6 +44,10 @@ def board_to_vector(board):
 
 
 def piece_to_int(name):
+    """
+    Convert a chess.Piece string to an integer.
+    The mapping is completely arbitrary.
+    """
     translation = {
         'P': 1,
         'B': 2,
