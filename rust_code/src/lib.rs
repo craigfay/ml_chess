@@ -42,44 +42,6 @@ pub extern "C" fn numeric_gamestate_material_values(ints: &NumericGameState, tar
     target[1] = black_value as i32;
 }
 
-#[no_mangle]
-pub extern "C" fn example(list: &mut [[i32; 2]; 3]) {
-    for i in 0..3 {
-        for j in 0..2 {
-            list[i][j] = (i + j) as i32;
-        }
-    }
-}
-
-//
-//#[no_mangle]
-//pub extern "C" fn enumerate_legal_numeric_gamestates(ints: NumericGameState) -> Vec<NumericGameState> {
-//    let state = denumeralize_gamestate(ints);
-//    let next_states = legal_next_states(&state);
-//
-//    let mut result = vec![];
-//    
-//    for state in next_states {
-//        result.push(numeralize_gamestate(&state));
-//    }
-//
-//    result
-//}
-//
-
-#[no_mangle]
-pub extern "C" fn fill_state_array(ints: &NumericGameState, sa: &mut StateArray) {
-    let state = denumeralize_gamestate(*ints);
-    let next_states = legal_next_states(&state);
-
-    for index in 0..next_states.len() {
-        let numeric = numeralize_gamestate(&next_states[index]);
-        //sa.states[index] = numeric;
-        sa.length += 1;
-    }
-
-}
-
 fn denumeralize_gamestate(ints: NumericGameState) -> GameState {
     let mut state = GameState::with_placements(vec![]);
 
