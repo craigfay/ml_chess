@@ -12,7 +12,9 @@ pub fn training_pipeline(cycles: i32) {
     for i in 0..cycles {
         let decision = agent.react(&environment);
         let consequences = environment.apply(decision);
-        println!("{}", &environment.state.to_string());
+
+        // agent.reward(&consequences);
+        //println!("{:?}", numeralize_gamestate(&environment.state));
     }
 }
 
@@ -26,7 +28,8 @@ struct ChessEnvironment {
 }
 
 struct ChessAgent {
-    // associations: HashMap<ChessEnvironment, i32>
+    associations: HashMap<NumericGameState, i32>,
+    last_decision: NumericGameState,
 }
 
 impl ChessEnvironment {
@@ -49,7 +52,8 @@ impl ChessEnvironment {
 impl ChessAgent {
     pub fn new() -> ChessAgent {
         ChessAgent {
-            // associations: HashMap::new(),
+            associations: HashMap::new(),
+            last_decision: numeralize_gamestate(&GameState::new()),
         }
     }
     pub fn react(&self, environment: &ChessEnvironment) -> GameState {

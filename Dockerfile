@@ -11,6 +11,9 @@ FROM rust:latest
 # Install cbindgen, which generates C bindings for Rust
 RUN cargo install --force cbindgen
 
+# Use nightly rust build
+RUN rustup default nightly
+
 # Download Tensorflow
 RUN curl https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-linux-x86_64-1.15.0.tar.gz > libtensorflow.tar.gz
 

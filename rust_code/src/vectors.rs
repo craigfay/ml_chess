@@ -20,7 +20,8 @@ use chess_engine::{
     relative_material_values,
 };
 
-type NumericGameState = [i32; 70];
+pub type NumericGameState = [i32; 70];
+
 
 pub fn numeric_gamestate_is_checkmate(ints: NumericGameState) -> bool {
     let state = denumeralize_gamestate(ints);
