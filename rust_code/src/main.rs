@@ -1,18 +1,23 @@
+mod vectors;
+
 use std::collections::HashMap;
 use chess_engine::*;
+use vectors::*;
 
-pub fn trainingPipeline(cycles: i32) {
+
+pub fn training_pipeline(cycles: i32) {
     let mut agent = ChessAgent::new();
     let mut environment = ChessEnvironment::new();
 
     for i in 0..cycles {
         let decision = agent.react(&environment);
         let consequences = environment.apply(decision);
+        println!("{}", &environment.state.to_string());
     }
 }
 
 pub fn main() {
-    trainingPipeline(5);
+    training_pipeline(5);
 }
 
 
