@@ -29,7 +29,7 @@ struct ChessEnvironment {
 
 struct ChessAgent {
     associations: HashMap<NumericGameState, i32>,
-    last_decision: NumericGameState,
+    last_decision: GameState,
 }
 
 impl ChessEnvironment {
@@ -53,12 +53,13 @@ impl ChessAgent {
     pub fn new() -> ChessAgent {
         ChessAgent {
             associations: HashMap::new(),
-            last_decision: numeralize_gamestate(&GameState::new()),
+            last_decision: GameState::new(),
         }
     }
-    pub fn react(&self, environment: &ChessEnvironment) -> GameState {
+    pub fn react(&mut self, environment: &ChessEnvironment) -> GameState {
         let decisions = environment.available_decisions();
-        return decisions[0];
+        self.last_decision = decisions[0].clone();
+        decisions[0]
     }
 }
 
