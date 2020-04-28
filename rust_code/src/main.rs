@@ -9,7 +9,12 @@ pub fn training_pipeline(cycles: i32) {
     let mut agent = ChessAgent::new();
     let mut environment = ChessEnvironment::new();
 
-    for i in 0..cycles {
+    for _ in 0..cycles {
+        // evaluate()?
+        
+        // Does the agent experience reward only after committing to
+        // a decision? Can it hypothesize?
+        
         let decision = agent.react(&environment);
         let consequences = environment.apply(decision);
 
@@ -56,7 +61,20 @@ impl ChessAgent {
             last_decision: GameState::new(),
         }
     }
+
     pub fn react(&mut self, environment: &ChessEnvironment) -> GameState {
+        let decisions = environment.available_decisions();
+
+        let best_decision: Option<GameState> = None;
+        
+        for decision in decisions.iter() {
+            println!("{}", decision.to_string());
+        }
+        //self.last_decision = decisions[0].clone();
+        decisions[0]
+    }
+
+    pub fn evaluate(&mut self, environment: &ChessEnvironment) -> GameState {
         let decisions = environment.available_decisions();
         self.last_decision = decisions[0].clone();
         decisions[0]
