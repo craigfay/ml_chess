@@ -37,6 +37,8 @@ struct ChessEnvironment {
 struct ChessAgent {
     associations: HashMap<NumericGameState, i32>,
     last_decision: GameState,
+    foresight: i32,
+    discount: f32,
 }
 
 impl ChessEnvironment {
@@ -61,29 +63,56 @@ impl ChessAgent {
         ChessAgent {
             associations: HashMap::new(),
             last_decision: GameState::new(),
+            foresight: 4,
+            discount: 0.9,
         }
     }
 
     pub fn react(&mut self, environment: &ChessEnvironment) -> GameState {
         let decisions = environment.available_decisions();
 
-        let best_decision: Option<GameState> = None;
+        let mut best_decision: Option<GameState> = None;
+        let mut best_value: f32 = 0.0;
         
         for decision in decisions.iter() {
-            println!("{}", decision.to_string());
+            let next_environment = ChessEnvironment { state: *decision };
+            let value = self.evaluate(&next_environment, 0);
+            if value > best_value {
+                best_decision = Some(*decision);
+                best_value = value;
+            }
+
         }
         
+        self.last_decision = best_decision.unwrap();
+        best_decision.unwrap()
+    }
+
+    pub fn evaluate(&mut self, environment: &ChessEnvironment, depth: i32) -> f32 {
+
+        println!("{}", environment.state.to_string());
+
+        // Discount function
+        let (white_score, black_score) = relative_material_values(&environment.state);
+        let value: f32 = white_score as f32 / black_score as f32;
+        let discounted_value = value * self.discount.powf(depth as f32);
+
+        // Recursion base case
+        if depth == self.foresight {
+            return discounted_value;            
+        }
+
+        // Chose a random next position to evaluate
+        let decisions = environment.available_decisions();
         let mut rng = rand::thread_rng();
         let random_index = rng.gen_range(0, decisions.len());
 
-        self.last_decision = decisions[random_index].clone();
-        decisions[random_index]
-    }
+        let next_state = ChessEnvironment {
+            state: decisions[random_index],
+        };
 
-    pub fn evaluate(&mut self, environment: &ChessEnvironment) -> GameState {
-        let decisions = environment.available_decisions();
-        self.last_decision = decisions[0].clone();
-        decisions[0]
+        let value_of_next_state = self.evaluate(&next_state, depth + 1);
+        discounted_value + value_of_next_state
     }
 }
 
