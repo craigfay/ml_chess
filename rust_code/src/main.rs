@@ -14,6 +14,10 @@ pub fn training_pipeline(cycles: i32) {
     let mut environment = ChessEnvironment::new();
 
     for _ in 0..cycles {
+
+        if environment.is_terminated() {
+            break;
+        }
         
         // Does the agent experience reward only after committing to
         // a decision? Can it hypothesize?
@@ -54,6 +58,10 @@ impl ChessEnvironment {
 
     pub fn available_decisions(&self) -> Vec<GameState> {
         legal_next_states(&self.state)
+    }
+
+    pub fn is_terminated(&self) -> bool {
+        is_checkmate(&self.state) || is_stalemate(&self.state)
     }
 }
 
