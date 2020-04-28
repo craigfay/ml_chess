@@ -79,21 +79,21 @@ impl ChessAgent {
     pub fn react(&mut self, environment: &ChessEnvironment) -> GameState {
         let decisions = environment.available_decisions();
 
-        let mut best_decision: Option<GameState> = None;
-        let mut best_value: f32 = 0.0;
+        let mut best_decision = decisions[0];
+        let mut best_value: f32 = -1.0;
         
         for decision in decisions.iter() {
             let next_environment = ChessEnvironment { state: *decision };
             let value = self.evaluate(&next_environment, 0);
             if value > best_value {
-                best_decision = Some(*decision);
+                best_decision = *decision;
                 best_value = value;
             }
 
         }
         
-        self.last_decision = best_decision.unwrap();
-        best_decision.unwrap()
+        self.last_decision = best_decision;
+        best_decision
     }
 
     pub fn evaluate(&mut self, environment: &ChessEnvironment, depth: i32) -> f32 {
