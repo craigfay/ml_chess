@@ -144,10 +144,10 @@ impl ChessAgent {
 
         // TODO normalize value in a way that makes wins non problematic
         if environment.is_terminated() {
-            match environment.terminal_state() {
-                TerminalState::Win => return f32::MAX,
-                TerminalState::Loss => return 0.0,
-                TerminalState::Draw => return 1.0,
+            return match environment.terminal_state() {
+                TerminalState::Win => f32::MAX,
+                TerminalState::Loss => 0.0,
+                TerminalState::Draw => 1.0,
             }
         }
 
