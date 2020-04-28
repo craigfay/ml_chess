@@ -30,7 +30,7 @@ pub fn training_pipeline(cycles: i32) {
 }
 
 pub fn main() {
-    training_pipeline(5);
+    training_pipeline(40);
 }
 
 
@@ -43,6 +43,7 @@ struct ChessAgent {
     last_decision: GameState,
     foresight: i32,
     discount: f32,
+    positions_evaluated: i32,
 }
 
 enum TerminalState {
@@ -91,6 +92,7 @@ impl ChessAgent {
             last_decision: GameState::new(),
             foresight: 4,
             discount: 0.9,
+            positions_evaluated: 0,
         }
     }
 
@@ -102,7 +104,7 @@ impl ChessAgent {
         
         for decision in decisions.iter() {
             let next_environment = ChessEnvironment { state: *decision };
-            let value = self.evaluate(&next_environment, 0);
+            let value = self.evaluate(&next_environment, 1);
             if value > best_value {
                 best_decision = *decision;
                 best_value = value;
@@ -115,12 +117,20 @@ impl ChessAgent {
     }
 
     pub fn evaluate(&mut self, environment: &ChessEnvironment, depth: i32) -> f32 {
+        self.positions_evaluated += 1;
 
+        println!("#{}", self.positions_evaluated);
         println!("{}", environment.state.to_string());
+
+        // TODO divide value by depth
 
         // Discount function
         let (white_score, black_score) = relative_material_values(&environment.state);
         let value: f32 = white_score as f32 / black_score as f32;
+
+        println!("material: {}/{}", white_score, black_score);
+        println!("value: {}\n", value);
+
         let discounted_value = value * self.discount.powf(depth as f32);
 
         // TODO normalize value in a way that makes wins non problematic
@@ -134,7 +144,7 @@ impl ChessAgent {
 
         // Recursion base case
         if depth == self.foresight || environment.is_terminated() {
-            return discounted_value;            
+            return discounted_value / depth as f32;
         }
 
         // Chose a random next position to evaluate
