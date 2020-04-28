@@ -1,6 +1,10 @@
 mod vectors;
 
+extern crate rand;
+
 use std::collections::HashMap;
+use rand::Rng;
+
 use chess_engine::*;
 use vectors::*;
 
@@ -10,7 +14,6 @@ pub fn training_pipeline(cycles: i32) {
     let mut environment = ChessEnvironment::new();
 
     for _ in 0..cycles {
-        // evaluate()?
         
         // Does the agent experience reward only after committing to
         // a decision? Can it hypothesize?
@@ -19,7 +22,6 @@ pub fn training_pipeline(cycles: i32) {
         let consequences = environment.apply(decision);
 
         // agent.reward(&consequences);
-        //println!("{:?}", numeralize_gamestate(&environment.state));
     }
 }
 
@@ -70,8 +72,12 @@ impl ChessAgent {
         for decision in decisions.iter() {
             println!("{}", decision.to_string());
         }
-        //self.last_decision = decisions[0].clone();
-        decisions[0]
+        
+        let mut rng = rand::thread_rng();
+        let random_index = rng.gen_range(0, decisions.len());
+
+        self.last_decision = decisions[random_index].clone();
+        decisions[random_index]
     }
 
     pub fn evaluate(&mut self, environment: &ChessEnvironment) -> GameState {
