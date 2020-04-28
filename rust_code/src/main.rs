@@ -45,6 +45,12 @@ struct ChessAgent {
     discount: f32,
 }
 
+enum TerminalState {
+    Win, 
+    Loss,
+    Draw,
+}
+
 impl ChessEnvironment {
     pub fn new() -> ChessEnvironment {
         ChessEnvironment {
@@ -62,6 +68,18 @@ impl ChessEnvironment {
 
     pub fn is_terminated(&self) -> bool {
         is_checkmate(&self.state) || is_stalemate(&self.state)
+    }
+
+    pub fn terminal_state(&self) -> TerminalState {
+        if is_checkmate(&self.state) {
+            if self.state.to_move == Color::White {
+                return TerminalState::Loss;
+            }
+            else {
+                return TerminalState::Win;
+            }
+        }
+        return TerminalState::Draw;
     }
 }
 
@@ -105,8 +123,17 @@ impl ChessAgent {
         let value: f32 = white_score as f32 / black_score as f32;
         let discounted_value = value * self.discount.powf(depth as f32);
 
+        // TODO normalize value in a way that makes wins non problematic
+        if environment.is_terminated() {
+            match environment.terminal_state() {
+                TerminalState::Win => return f32::MAX,
+                TerminalState::Loss => return 0.0,
+                TerminalState::Draw => return 1.0,
+            }
+        }
+
         // Recursion base case
-        if depth == self.foresight {
+        if depth == self.foresight || environment.is_terminated() {
             return discounted_value;            
         }
 
