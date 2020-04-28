@@ -58,9 +58,18 @@ impl ChessEnvironment {
             state: GameState::new(),
         }
     }
+
     pub fn apply(&mut self, decision: GameState) {
+        // Apply agent move
         self.state = decision;
-        // ... apply random opponent move
+
+        if !self.is_terminated() {
+            // Apply random opponent move
+            let decisions = self.available_decisions();
+            let mut rng = rand::thread_rng();
+            let random_index = rng.gen_range(0, decisions.len());
+            self.state = decisions[random_index];
+        }
     }
 
     pub fn available_decisions(&self) -> Vec<GameState> {
