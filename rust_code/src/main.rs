@@ -105,6 +105,7 @@ impl ChessAgent {
         }
     }
 
+    // Policy Function
     pub fn react(&mut self, environment: &ChessEnvironment) -> GameState {
         let decisions = environment.available_decisions();
 
@@ -125,35 +126,42 @@ impl ChessAgent {
         best_decision
     }
 
+    // Value Function / Bellman Equation
     pub fn evaluate(&mut self, environment: &ChessEnvironment, depth: i32) -> f32 {
         self.positions_evaluated += 1;
 
         println!("#{}", self.positions_evaluated);
         println!("{}", environment.state.to_string());
 
-        // TODO divide value by depth
-
         // Discount function
         let (white_score, black_score) = relative_material_values(&environment.state);
-        let value: f32 = white_score as f32 / black_score as f32;
 
-        println!("material: {}/{}", white_score, black_score);
-        println!("value: {}\n", value);
+        // This equation normalizes our value between -1.0 and 1.0.
+        let value = (white_score as f32 - black_score as f32) / std::cmp::max(white_score, black_score) as f32;
 
+        // Values are discounted based on their distance into the future.
+        // This accounts for uncertainty, and the represents the idea that
+        // it's high probability reward now is usually more valueable than
+        // lower probability reward later.
         let discounted_value = value * self.discount.powf(depth as f32);
 
-        // TODO normalize value in a way that makes wins non problematic
+        println!("material: {}/{}", white_score, black_score);
+        println!("value: {}", value);
+        println!("discounted_value: {}\n", discounted_value);
+
+
+        // Recursion base case
         if environment.is_terminated() {
             return match environment.terminal_state() {
-                TerminalState::Win => f32::MAX,
-                TerminalState::Loss => 0.0,
-                TerminalState::Draw => 1.0,
+                TerminalState::Win => 1.0,
+                TerminalState::Loss => -1.0,
+                TerminalState::Draw => 0.0,
             }
         }
 
         // Recursion base case
-        if depth == self.foresight || environment.is_terminated() {
-            return discounted_value / depth as f32;
+        if depth == self.foresight {
+            return discounted_value;
         }
 
         // Chose a random next position to evaluate
