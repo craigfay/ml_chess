@@ -136,8 +136,9 @@ impl ChessAgent {
         // Discount function
         let (white_score, black_score) = relative_material_values(&environment.state);
 
-        // This equation normalizes our value between -1.0 and 1.0.
-        let value = (white_score as f32 - black_score as f32) / std::cmp::max(white_score, black_score) as f32;
+        // Normalizing our value between -1.0 and 1.0.
+        let max_score = std::cmp::max(white_score, black_score) as f32;
+        let value = (white_score as f32 - black_score as f32) / max_score;
 
         // Values are discounted based on their distance into the future.
         // This accounts for uncertainty, and the represents the idea that
