@@ -150,14 +150,16 @@ impl ChessAgent {
         println!("value: {}", value);
         println!("discounted_value: {}\n", discounted_value);
 
-
         // Recursion base case
         if environment.is_terminated() {
-            return match environment.terminal_state() {
+            let value = match environment.terminal_state() {
                 TerminalState::Win => 1.0,
                 TerminalState::Loss => -1.0,
                 TerminalState::Draw => 0.0,
-            }
+            };
+
+            // Apply discount function
+            return value * self.discount.powf(depth as f32)
         }
 
         // Recursion base case
