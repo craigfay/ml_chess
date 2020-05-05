@@ -64,7 +64,7 @@ struct Experience {
 impl Experience {
     fn new() -> Experience {
         Experience {
-            times_encountered: 0,
+            times_encountered: 1,
             average_value: 0.0,
         }
     }
@@ -158,13 +158,13 @@ impl ChessAgent {
         }
     }
 
-    pub fn remember_experience(&mut self, environment: &ChessEnvironment, value: f32) {
+    pub fn memorize_experience(&mut self, environment: &ChessEnvironment, value: f32) {
         let hash = hash_gamestate(&environment.state);
         let experience = &self.recall_experience(&environment);
 
         let revised_experience = Experience {
             times_encountered: experience.times_encountered + 1,
-            average_value: (experience.average_value + value) / experience.times_encountered as f32,
+            average_value: (experience.average_value + value) as f32 / experience.times_encountered as f32,
         };
 
         self.experiences.insert(hash, revised_experience);
@@ -253,9 +253,10 @@ impl ChessAgent {
         };
 
         let value_of_next_state = self.evaluate(&next_state, depth + 1);
-        let answer = discounted_value + value_of_next_state;
-        answer
-        // Store value in experiences!
+        let value = discounted_value + value_of_next_state;
+
+        self.memorize_experience(&environment, value);
+        value 
     }
 }
 
