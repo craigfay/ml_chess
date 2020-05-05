@@ -39,7 +39,7 @@ struct ChessEnvironment {
 }
 
 struct ChessAgent {
-    associations: HashMap<NumericGameState, i32>,
+    associations: HashMap<String, i32>,
     last_decision: GameState,
     foresight: i32,
     discount: f32,
@@ -108,9 +108,20 @@ impl ChessAgent {
     }
 
     pub fn will_explore(&self) -> bool {
+        // Generate a random float between 0 and 1,
+        // returning true if it's higher than the  agent's
+        // propensity to explore, and false otherwise.
         let mut rng = rand::thread_rng();
         let random_float = rng.gen::<f32>();
         random_float - (random_float as i32) as f32 > self.exploration_propensity
+    }
+
+    pub fn rank_confidence_in_positions(&self, positions: &mut Vec<GameState>) {
+        positions.sort_by(|a, b| {
+            let hashed_a = format!("{:?}", &a);
+            let hashed_b = format!("{:?}", &b);
+            self.associations.get(&hashed_a).partial_cmp(&self.associations.get(&hashed_b)).unwrap()
+        })
     }
 
     // Policy Function
