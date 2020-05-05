@@ -44,6 +44,7 @@ struct ChessAgent {
     foresight: i32,
     discount: f32,
     positions_evaluated: i32,
+    exploration_propensity: f32,
 }
 
 enum TerminalState {
@@ -102,7 +103,14 @@ impl ChessAgent {
             foresight: 4,
             discount: 0.9,
             positions_evaluated: 0,
+            exploration_propensity: 0.5,
         }
+    }
+
+    pub fn will_explore(&self) -> bool {
+        let mut rng = rand::thread_rng();
+        let random_float = rng.gen::<f32>();
+        random_float - (random_float as i32) as f32 > self.exploration_propensity
     }
 
     // Policy Function
@@ -166,6 +174,9 @@ impl ChessAgent {
         if depth == self.foresight {
             return discounted_value;
         }
+
+        // Choose between exploration / exploitation
+        
 
         // Chose a random next position to evaluate
         let decisions = environment.available_decisions();
