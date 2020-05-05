@@ -51,6 +51,15 @@ struct PositionHistory {
     average_value: f32,
 }
 
+impl PositionHistory {
+    fn new() -> PositionHistory {
+        PositionHistory {
+            times_encountered: 0,
+            average_value: 0.0,
+        }
+    }
+}
+
 struct ChessAgent {
     associations: HashMap<String, PositionHistory>,
     last_decision: GameState,
@@ -134,14 +143,8 @@ impl ChessAgent {
         positions.sort_by(|a, b| {
             let hashed_a = hash_gamestate(&a);
             let hashed_b = hash_gamestate(&b);
-            let value_a = match self.associations.get(&hashed_a) {
-                Some(history) => history.average_value,
-                None => 1.0,
-            };
-            let value_b = match self.associations.get(&hashed_b) {
-                Some(history) => history.average_value,
-                None => 1.0,
-            };
+            let value_a = self.associations.get(&hashed_a).unwrap_or(&PositionHistory::new()).average_value;
+            let value_b = self.associations.get(&hashed_b).unwrap_or(&PositionHistory::new()).average_value;
             value_a.partial_cmp(&value_b).unwrap()
         })
     }
@@ -229,7 +232,9 @@ impl ChessAgent {
         };
 
         let value_of_next_state = self.evaluate(&next_state, depth + 1);
-        discounted_value + value_of_next_state
+        let answer = discounted_value + value_of_next_state;
+        answer
+        // Store value in associations!
     }
 }
 
