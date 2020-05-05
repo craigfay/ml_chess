@@ -33,6 +33,14 @@ pub fn main() {
     training_pipeline(40);
 }
 
+// Eventually, it would be better to use a numeralized
+// gamestate, or PGN chess notation as the hash. For now,
+// the primary obstacle to numeralization is Rust's problem
+// with arrays > 32 elements long.
+pub fn hash_gamestate(state: &GameState) -> String {
+    format!("{:?}", state)
+}
+
 
 struct ChessEnvironment {
     pub state: GameState,
@@ -93,6 +101,7 @@ impl ChessEnvironment {
         return TerminalState::Draw;
     }
 }
+
 
 
 impl ChessAgent {
