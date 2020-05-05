@@ -46,8 +46,13 @@ struct ChessEnvironment {
     pub state: GameState,
 }
 
+struct PositionHistory {
+    times_encountered: i32,
+    average_value: f32,
+}
+
 struct ChessAgent {
-    associations: HashMap<String, i32>,
+    associations: HashMap<String, PositionHistory>,
     last_decision: GameState,
     foresight: i32,
     discount: f32,
@@ -129,8 +134,14 @@ impl ChessAgent {
         positions.sort_by(|a, b| {
             let hashed_a = hash_gamestate(&a);
             let hashed_b = hash_gamestate(&b);
-            let value_a = self.associations.get(&hashed_a);
-            let value_b = self.associations.get(&hashed_b);
+            let value_a = match self.associations.get(&hashed_a) {
+                Some(history) => history.average_value,
+                None => 1.0,
+            };
+            let value_b = match self.associations.get(&hashed_b) {
+                Some(history) => history.average_value,
+                None => 1.0,
+            };
             value_a.partial_cmp(&value_b).unwrap()
         })
     }
@@ -200,14 +211,16 @@ impl ChessAgent {
         let mut decisions = environment.available_decisions();
         let mut decision_index_to_evaluate = 0;
 
+
         // Choose between exploration / exploitation
         if self.will_explore() {
-            // Chose a random next position to evaluate
+            // Chose a random next position to explore
             let mut rng = rand::thread_rng();
             decision_index_to_evaluate = rng.gen_range(0, decisions.len());
         }
 
         else {
+            // Exploit the position that's most familiar / confident
             self.rank_confidence_in_positions(&mut decisions);
         }
 
