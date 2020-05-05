@@ -46,29 +46,28 @@ struct ChessEnvironment {
     pub state: GameState,
 }
 
-
-#[derive(Copy, Clone)]
-struct PositionHistory {
-    times_encountered: i32,
-    average_value: f32,
-}
-
-impl PositionHistory {
-    fn new() -> PositionHistory {
-        PositionHistory {
-            times_encountered: 0,
-            average_value: 0.0,
-        }
-    }
-}
-
 struct ChessAgent {
-    associations: HashMap<String, PositionHistory>,
+    experiences: HashMap<String, Experience>,
     last_decision: GameState,
     foresight: i32,
     discount: f32,
     positions_evaluated: i32,
     exploration_propensity: f32,
+}
+
+#[derive(Copy, Clone)]
+struct Experience {
+    times_encountered: i32,
+    average_value: f32,
+}
+
+impl Experience {
+    fn new() -> Experience {
+        Experience {
+            times_encountered: 0,
+            average_value: 0.0,
+        }
+    }
 }
 
 enum TerminalState {
@@ -123,7 +122,7 @@ impl ChessEnvironment {
 impl ChessAgent {
     pub fn new() -> ChessAgent {
         ChessAgent {
-            associations: HashMap::new(),
+            experiences: HashMap::new(),
             last_decision: GameState::new(),
             foresight: 4,
             discount: 0.9,
@@ -145,16 +144,16 @@ impl ChessAgent {
         positions.sort_by(|a, b| {
             let hashed_a = hash_gamestate(&a);
             let hashed_b = hash_gamestate(&b);
-            let value_a = self.associations.get(&hashed_a).unwrap_or(&PositionHistory::new()).average_value;
-            let value_b = self.associations.get(&hashed_b).unwrap_or(&PositionHistory::new()).average_value;
+            let value_a = self.experiences.get(&hashed_a).unwrap_or(&Experience::new()).average_value;
+            let value_b = self.experiences.get(&hashed_b).unwrap_or(&Experience::new()).average_value;
             value_a.partial_cmp(&value_b).unwrap()
         })
     }
 
-    pub fn recall_experience(&self, environment: &ChessEnvironment) -> PositionHistory {
+    pub fn recall_experience(&self, environment: &ChessEnvironment) -> Experience {
         let hash = hash_gamestate(&environment.state);
-        match self.associations.get(&hash) {
-            None => PositionHistory::new(),
+        match self.experiences.get(&hash) {
+            None => Experience::new(),
             Some(experience) => *experience,
         }
     }
@@ -163,12 +162,12 @@ impl ChessAgent {
         let hash = hash_gamestate(&environment.state);
         let experience = &self.recall_experience(&environment);
 
-        let revised_experience = PositionHistory {
+        let revised_experience = Experience {
             times_encountered: experience.times_encountered + 1,
             average_value: (experience.average_value + value) / experience.times_encountered as f32,
         };
 
-        self.associations.insert(hash, revised_experience);
+        self.experiences.insert(hash, revised_experience);
     }
 
     // Policy Function
@@ -256,7 +255,7 @@ impl ChessAgent {
         let value_of_next_state = self.evaluate(&next_state, depth + 1);
         let answer = discounted_value + value_of_next_state;
         answer
-        // Store value in associations!
+        // Store value in experiences!
     }
 }
 
