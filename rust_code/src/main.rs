@@ -197,16 +197,22 @@ impl ChessAgent {
             return discounted_value;
         }
 
-        // Choose between exploration / exploitation
-        
+        let mut decisions = environment.available_decisions();
+        let mut decision_index_to_evaluate = 0;
 
-        // Chose a random next position to evaluate
-        let decisions = environment.available_decisions();
-        let mut rng = rand::thread_rng();
-        let random_index = rng.gen_range(0, decisions.len());
+        // Choose between exploration / exploitation
+        if self.will_explore() {
+            // Chose a random next position to evaluate
+            let mut rng = rand::thread_rng();
+            decision_index_to_evaluate = rng.gen_range(0, decisions.len());
+        }
+
+        else {
+            self.rank_confidence_in_positions(&mut decisions);
+        }
 
         let next_state = ChessEnvironment {
-            state: decisions[random_index],
+            state: decisions[decision_index_to_evaluate],
         };
 
         let value_of_next_state = self.evaluate(&next_state, depth + 1);
