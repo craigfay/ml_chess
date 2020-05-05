@@ -46,6 +46,8 @@ struct ChessEnvironment {
     pub state: GameState,
 }
 
+
+#[derive(Copy, Clone)]
 struct PositionHistory {
     times_encountered: i32,
     average_value: f32,
@@ -147,6 +149,26 @@ impl ChessAgent {
             let value_b = self.associations.get(&hashed_b).unwrap_or(&PositionHistory::new()).average_value;
             value_a.partial_cmp(&value_b).unwrap()
         })
+    }
+
+    pub fn recall_experience(&self, environment: &ChessEnvironment) -> PositionHistory {
+        let hash = hash_gamestate(&environment.state);
+        match self.associations.get(&hash) {
+            None => PositionHistory::new(),
+            Some(experience) => *experience,
+        }
+    }
+
+    pub fn remember_experience(&mut self, environment: &ChessEnvironment, value: f32) {
+        let hash = hash_gamestate(&environment.state);
+        let experience = &self.recall_experience(&environment);
+
+        let revised_experience = PositionHistory {
+            times_encountered: experience.times_encountered + 1,
+            average_value: (experience.average_value + value) / experience.times_encountered as f32,
+        };
+
+        self.associations.insert(hash, revised_experience);
     }
 
     // Policy Function
