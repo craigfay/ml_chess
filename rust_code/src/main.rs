@@ -127,9 +127,11 @@ impl ChessAgent {
 
     pub fn rank_confidence_in_positions(&self, positions: &mut Vec<GameState>) {
         positions.sort_by(|a, b| {
-            let hashed_a = format!("{:?}", &a);
-            let hashed_b = format!("{:?}", &b);
-            self.associations.get(&hashed_a).partial_cmp(&self.associations.get(&hashed_b)).unwrap()
+            let hashed_a = hash_gamestate(&a);
+            let hashed_b = hash_gamestate(&b);
+            let value_a = self.associations.get(&hashed_a);
+            let value_b = self.associations.get(&hashed_b);
+            value_a.partial_cmp(&value_b).unwrap()
         })
     }
 
