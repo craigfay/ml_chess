@@ -10,26 +10,31 @@ use vectors::*;
 
 static DEBUG: bool = true;
 
-pub fn training_pipeline(cycles: i32) {
+pub fn training_pipeline(game_limit: i32, turn_limit: i32) {
     let mut agent = ChessAgent::new();
-    let mut environment = ChessEnvironment::new();
 
-    for _ in 0..cycles {
+    for _ in 0..game_limit {
 
-        if environment.is_terminated() {
-            break;
+        let mut environment = ChessEnvironment::new();
+        agent.playing_as = match agent.playing_as {
+            Color::White => Color::Black,
+            Color::Black=> Color::White,
+        };
+
+        for _ in 0..turn_limit {
+
+            if environment.is_terminated() {
+                break;
+            }
+            
+            let decision = agent.react(&environment);
+            environment.apply(decision);
         }
-        
-        // Does the agent experience reward only after committing to
-        // a decision? Can it hypothesize?
-        
-        let decision = agent.react(&environment);
-        let consequences = environment.apply(decision);
     }
 }
 
 pub fn main() {
-    training_pipeline(40);
+    training_pipeline(2, 40);
 }
 
 // Eventually, it would be better to use a numeralized
@@ -280,5 +285,4 @@ impl ChessAgent {
         }
     }
 }
-
 
