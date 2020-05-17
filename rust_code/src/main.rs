@@ -8,6 +8,10 @@ use rand::Rng;
 use chess_engine::*;
 use vectors::*;
 
+// Serialization Libs
+use ron::ser::{to_string_pretty, PrettyConfig};
+use serde::{Serialize, Deserialize};
+
 static DEBUG: bool = true;
 
 pub struct TrainingOptions {
@@ -36,12 +40,23 @@ pub fn training_pipeline(options: TrainingOptions) {
             environment.apply(decision);
         }
     }
+
+    let pretty = PrettyConfig {
+        new_line: "\n".to_string(),
+        indentor: " ".to_string(),
+        depth_limit: 4,
+        separate_tuple_members: true,
+        enumerate_arrays: true,
+    };
+
+    let s = to_string_pretty(&agent.experiences, pretty).expect("Serialization failed");
+    println!("{}", s);
 }
 
 pub fn main() {
     training_pipeline(TrainingOptions {
-        game_limit: 5,
-        turn_limit: 40,
+        game_limit: 1,
+        turn_limit: 5,
     });
 }
 
@@ -68,7 +83,7 @@ struct ChessAgent {
     exploration_propensity: f32,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 struct Experience {
     times_encountered: i32,
     average_value: f32,
