@@ -8,6 +8,7 @@ use rand::Rng;
 use chess_engine::*;
 use vectors::*;
 
+static DEBUG: bool = true;
 
 pub fn training_pipeline(cycles: i32) {
     let mut agent = ChessAgent::new();
@@ -24,8 +25,6 @@ pub fn training_pipeline(cycles: i32) {
         
         let decision = agent.react(&environment);
         let consequences = environment.apply(decision);
-
-        // agent.reward(&consequences);
     }
 }
 
@@ -38,7 +37,7 @@ pub fn main() {
 // the primary obstacle to numeralization is Rust's problem
 // with arrays > 32 elements long.
 pub fn hash_gamestate(state: &GameState) -> String {
-    format!("{:?}", state)
+    fen_notation(&state)
 }
 
 
@@ -55,7 +54,7 @@ struct ChessAgent {
     exploration_propensity: f32,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 struct Experience {
     times_encountered: i32,
     average_value: f32,
@@ -193,27 +192,7 @@ impl ChessAgent {
 
     // Value Function / Bellman Equation
     pub fn evaluate(&mut self, environment: &ChessEnvironment, depth: i32) -> f32 {
-        self.positions_evaluated += 1;
-
-        println!("#{}", self.positions_evaluated);
-        println!("{}", environment.state.to_string());
-
-        // Discount function
         let (white_score, black_score) = relative_material_values(&environment.state);
-
-        // Normalizing our value between -1.0 and 1.0.
-        let max_score = std::cmp::max(white_score, black_score) as f32;
-        let value = (white_score as f32 - black_score as f32) / max_score;
-
-        // Values are discounted based on their distance into the future.
-        // This accounts for uncertainty, and the represents the idea that
-        // it's high probability reward now is usually more valueable than
-        // lower probability reward later.
-        let discounted_value = value * self.discount.powf(depth as f32);
-
-        println!("material: {}/{}", white_score, black_score);
-        println!("value: {}", value);
-        println!("discounted_value: {}\n", discounted_value);
 
         // Recursion base case
         if environment.is_terminated() {
@@ -229,6 +208,16 @@ impl ChessAgent {
 
         // Recursion base case
         if depth == self.foresight {
+            // Calculate expected value based on material, normalizing
+            // between -1.0 and 1.0.
+            let max_score = std::cmp::max(white_score, black_score) as f32;
+            let value = (white_score as f32 - black_score as f32) / max_score;
+
+            // Values are discounted based on their distance into the future.
+            // This accounts for uncertainty, and the represents the idea that
+            // it's high probability reward now is usually more valueable than
+            // lower probability reward later.
+            let discounted_value = value * self.discount.powf(depth as f32);
             return discounted_value;
         }
 
@@ -252,8 +241,26 @@ impl ChessAgent {
             state: decisions[decision_index_to_evaluate],
         };
 
+        // The value of the current state, discounting for distance into the future
+        let expected_value = self.recall_experience(environment).average_value;
+        let discounted_value = expected_value * self.discount.powf(depth as f32);
+
+        // Define the current value in terms of the value of the next state
         let value_of_next_state = self.evaluate(&next_state, depth + 1);
-        let value = discounted_value + value_of_next_state;
+        let value = (discounted_value + value_of_next_state) / 2.0;
+
+        self.positions_evaluated += 1;
+        if DEBUG {
+            // Print Debugging Info
+            println!("#{}", self.positions_evaluated);
+            println!("{}", environment.state.to_string());
+            println!("{}", hash_gamestate(&environment.state));
+
+            println!("W/B Material: {}/{}", white_score, black_score);
+            println!("expected_value: {}", expected_value);
+            println!("discounted_value: {}", discounted_value);
+            println!("recursive_value: {}\n", value);
+        }
 
         self.memorize_experience(&environment, value);
         value 
