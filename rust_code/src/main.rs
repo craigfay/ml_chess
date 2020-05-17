@@ -10,10 +10,15 @@ use vectors::*;
 
 static DEBUG: bool = true;
 
-pub fn training_pipeline(game_limit: i32, turn_limit: i32) {
+pub struct TrainingOptions {
+    pub game_limit: i32,
+    pub turn_limit: i32,
+}
+
+pub fn training_pipeline(options: TrainingOptions) {
     let mut agent = ChessAgent::new();
 
-    for _ in 0..game_limit {
+    for _ in 0..options.game_limit {
 
         let mut environment = ChessEnvironment::new();
         agent.playing_as = match agent.playing_as {
@@ -21,7 +26,7 @@ pub fn training_pipeline(game_limit: i32, turn_limit: i32) {
             Color::Black=> Color::White,
         };
 
-        for _ in 0..turn_limit {
+        for _ in 0..options.turn_limit {
 
             if environment.is_terminated() {
                 break;
@@ -34,7 +39,10 @@ pub fn training_pipeline(game_limit: i32, turn_limit: i32) {
 }
 
 pub fn main() {
-    training_pipeline(2, 40);
+    training_pipeline(TrainingOptions {
+        game_limit: 5,
+        turn_limit: 40,
+    });
 }
 
 // Eventually, it would be better to use a numeralized
