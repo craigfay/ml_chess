@@ -41,16 +41,7 @@ pub fn training_pipeline(options: TrainingOptions) {
         }
     }
 
-    let pretty = PrettyConfig {
-        new_line: "\n".to_string(),
-        indentor: " ".to_string(),
-        depth_limit: 4,
-        separate_tuple_members: true,
-        enumerate_arrays: true,
-    };
-
-    let s = to_string_pretty(&agent.experiences, pretty).expect("Serialization failed");
-    println!("{}", s);
+    agent.persist_experiences("./experiences.ron");
 }
 
 pub fn main() {
@@ -306,6 +297,20 @@ impl ChessAgent {
             Color::White => value,
             Color::Black => value * -1.0,
         }
+    }
+
+    // Write experiences to file
+    fn persist_experiences(&self, filename: &str) {
+        let pretty = PrettyConfig {
+            new_line: "\n".to_string(),
+            indentor: " ".to_string(),
+            depth_limit: 4,
+            separate_tuple_members: true,
+            enumerate_arrays: true,
+        };
+
+        let data = to_string_pretty(&self.experiences, pretty).expect("Serialization failed");
+        std::fs::write(filename, data).expect("Unable to write file");
     }
 }
 
