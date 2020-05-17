@@ -148,11 +148,10 @@ impl ChessAgent {
             let value_a = self.experiences.get(&hashed_a).unwrap_or(&Experience::new()).average_value;
             let value_b = self.experiences.get(&hashed_b).unwrap_or(&Experience::new()).average_value;
 
-            // Invert the values if playing as Black
-            let contextualized_value_a = self.value_from_own_perspective(value_a);
-            let contextualized_value_b = self.value_from_own_perspective(value_a);
-
-            contextualized_value_a.partial_cmp(&contextualized_value_b).unwrap()
+            match self.playing_as {
+                Color::White => value_a.partial_cmp(&value_b).unwrap(),
+                Color::Black => value_b.partial_cmp(&value_a).unwrap(),
+            }
         })
     }
 
@@ -185,12 +184,13 @@ impl ChessAgent {
         
         for decision in decisions.iter() {
             let next_environment = ChessEnvironment { state: *decision };
-            let value = self.evaluate(&next_environment, 1);
-            if value > best_value {
-                best_decision = *decision;
-                best_value = value;
-            }
+            let value_for_white = self.evaluate(&next_environment, 1);
+            let value_for_self = self.value_from_own_perspective(value_for_white);
 
+            if value_for_self > best_value {
+                best_decision = *decision;
+                best_value = value_for_self;
+            }
         }
         
         self.last_decision = best_decision;
@@ -270,7 +270,7 @@ impl ChessAgent {
         }
 
         self.memorize_experience(&environment, value);
-        self.value_from_own_perspective(value)
+        value
     }
 
     fn value_from_own_perspective(&self, value: f32) -> f32 {
