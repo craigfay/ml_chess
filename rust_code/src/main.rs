@@ -46,6 +46,7 @@ struct ChessEnvironment {
 }
 
 struct ChessAgent {
+    playing_as: Color,
     experiences: HashMap<String, Experience>,
     last_decision: GameState,
     foresight: i32,
@@ -121,6 +122,7 @@ impl ChessEnvironment {
 impl ChessAgent {
     pub fn new() -> ChessAgent {
         ChessAgent {
+            playing_as: Color::White,
             experiences: HashMap::new(),
             last_decision: GameState::new(),
             foresight: 4,
@@ -145,7 +147,12 @@ impl ChessAgent {
             let hashed_b = hash_gamestate(&b);
             let value_a = self.experiences.get(&hashed_a).unwrap_or(&Experience::new()).average_value;
             let value_b = self.experiences.get(&hashed_b).unwrap_or(&Experience::new()).average_value;
-            value_a.partial_cmp(&value_b).unwrap()
+
+            // Invert the values if playing as Black
+            let contextualized_value_a = self.value_from_own_perspective(value_a);
+            let contextualized_value_b = self.value_from_own_perspective(value_a);
+
+            contextualized_value_a.partial_cmp(&contextualized_value_b).unwrap()
         })
     }
 
@@ -263,7 +270,14 @@ impl ChessAgent {
         }
 
         self.memorize_experience(&environment, value);
-        value 
+        self.value_from_own_perspective(value)
+    }
+
+    fn value_from_own_perspective(&self, value: f32) -> f32 {
+        match self.playing_as {
+            Color::White => value,
+            Color::Black => value * -1.0,
+        }
     }
 }
 
