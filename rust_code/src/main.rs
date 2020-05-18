@@ -88,7 +88,7 @@ struct Experience {
 impl Experience {
     fn new() -> Experience {
         Experience {
-            times_encountered: 1,
+            times_encountered: 0,
             average_value: 0.0,
         }
     }
@@ -169,6 +169,7 @@ impl ChessAgent {
         positions.sort_by(|a, b| {
             let hashed_a = hash_gamestate(&a);
             let hashed_b = hash_gamestate(&b);
+
             let value_a = self.experiences.get(&hashed_a).unwrap_or(&Experience::new()).average_value;
             let value_b = self.experiences.get(&hashed_b).unwrap_or(&Experience::new()).average_value;
 
@@ -193,7 +194,8 @@ impl ChessAgent {
 
         let revised_experience = Experience {
             times_encountered: experience.times_encountered + 1,
-            average_value: (experience.average_value + value) as f32 / experience.times_encountered as f32,
+            // Use bitwise or to prevent dividing by zero
+            average_value: (experience.average_value + value) / (experience.times_encountered | 1) as f32,
         };
 
         self.experiences.insert(hash, revised_experience);
@@ -319,10 +321,13 @@ impl ChessAgent {
     }
     
     fn retrieve_persisted_experiences(&mut self, filename: &str) {
-        let text = std::fs::read_to_string(filename).expect("Unable to read file");
+        let text = match std::fs::read_to_string(filename) {
+            Ok(t) => t,
+            Err(_) => return,
+        };
         match from_str(&text) {
             Ok(exp) => self.experiences = exp,
-            Err(err) => std::process::exit(1),
+            Err(_) => return,
         };
     }
 }
