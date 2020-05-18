@@ -10,6 +10,7 @@ use vectors::*;
 
 // Serialization Libs
 use ron::ser::{to_string_pretty, PrettyConfig};
+use ron::de::from_str;
 use serde::{Serialize, Deserialize};
 
 static DEBUG: bool = true;
@@ -20,18 +21,22 @@ pub struct TrainingOptions {
 }
 
 pub fn training_pipeline(options: TrainingOptions) {
+    // Create an agent, and attempt to restore
+    // experiences created by previous training.
     let mut agent = ChessAgent::new();
+    agent.retrieve_persisted_experiences("./experiences.ron");
 
+    // Play until the game limit is reached
     for _ in 0..options.game_limit {
-
+        // Create a new environment, and switch sides
         let mut environment = ChessEnvironment::new();
         agent.playing_as = match agent.playing_as {
             Color::White => Color::Black,
             Color::Black=> Color::White,
         };
 
+        // Play until the turn limit is reached
         for _ in 0..options.turn_limit {
-
             if environment.is_terminated() {
                 break;
             }
@@ -303,14 +308,22 @@ impl ChessAgent {
     fn persist_experiences(&self, filename: &str) {
         let pretty = PrettyConfig {
             new_line: "\n".to_string(),
-            indentor: " ".to_string(),
+            indentor: "    ".to_string(),
             depth_limit: 4,
             separate_tuple_members: true,
             enumerate_arrays: true,
         };
 
-        let data = to_string_pretty(&self.experiences, pretty).expect("Serialization failed");
-        std::fs::write(filename, data).expect("Unable to write file");
+        let text = to_string_pretty(&self.experiences, pretty).expect("Serialization failed");
+        std::fs::write(filename, text).expect("Unable to write file");
+    }
+    
+    fn retrieve_persisted_experiences(&mut self, filename: &str) {
+        let text = std::fs::read_to_string(filename).expect("Unable to read file");
+        match from_str(&text) {
+            Ok(exp) => self.experiences = exp,
+            Err(err) => std::process::exit(1),
+        };
     }
 }
 
