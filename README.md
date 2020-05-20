@@ -5,3 +5,4 @@
 * Build container: `docker build . -t ml_chess`
 * Execute a shell inside the container: `docker run -it --rm -v $(pwd):/app -w /app ml_chess bash`
 
+# test
