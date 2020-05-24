@@ -37,6 +37,9 @@ pub fn play_vs_human(options: GameOptions) {
         }
 
         else {
+            get_input("Choose your move: ".to_string());
+            println!();
+
             environment.apply_change_randomly();
         }
 
@@ -56,6 +59,7 @@ pub fn play_vs_human(options: GameOptions) {
 }
 
 pub fn main() {
+
     play_vs_human(GameOptions {
         agent_playing_as: Color::White,
     });
