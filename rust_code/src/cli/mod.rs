@@ -11,12 +11,9 @@ pub fn get_input(prompt: String) -> String {
     stdout().flush();
     stdin().read_line(&mut input).expect("Invalid Input!");
 
-
     // Pop off newline characters
-    if let Some('\n') = input.chars().next_back() {
-        input.pop();
-    }
-    if let Some('\r') = input.chars().next_back() {
+    let last_char = input.chars().next_back();
+    if last_char == Some('\n') || last_char == Some('\r') {
         input.pop();
     }
     
