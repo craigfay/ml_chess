@@ -12,6 +12,7 @@ pub struct TrainingOptions {
     pub game_limit: i32,
     pub turn_limit: i32,
     pub save_after_every_nth_game: i32,
+    pub experience_filepath: String,
 }
 
 // TODO prompt for training options
@@ -27,7 +28,7 @@ pub fn training_pipeline(options: TrainingOptions) {
     // Create an agent, and attempt to restore
     // experiences created by previous training.
     let mut agent = ChessAgent::new();
-    agent.retrieve_persisted_experiences("./experiences.ron");
+    agent.retrieve_persisted_experiences(&options.experience_filepath);
 
     // Play until the game limit is reached
     for game_count in 0..options.game_limit {
@@ -55,11 +56,11 @@ pub fn training_pipeline(options: TrainingOptions) {
         }
 
         if game_count % options.save_after_every_nth_game == 0 {
-            agent.persist_experiences("./experiences.ron");
+            agent.persist_experiences(&options.experience_filepath);
         }
     }
 
-    agent.persist_experiences("./experiences.ron");
+    agent.persist_experiences(&options.experience_filepath);
 }
 
 pub fn main() {
@@ -68,21 +69,24 @@ pub fn main() {
 }
 
 fn prompt_training_options() -> TrainingOptions {
-    let game_limit: i32 = get_input("Game limit: ") 
+    let game_limit: i32 = get_input("game_limit: ") 
         .parse()
         .unwrap();
 
-    let turn_limit: i32 = get_input("Turn limit: ") 
+    let turn_limit: i32 = get_input("turn_limit: ") 
         .parse()
         .unwrap();
 
-    let save_after_every_nth_game: i32 = get_input("Save after every nth game: ") 
+    let save_after_every_nth_game: i32 = get_input("save_after_every_nth_game: ") 
         .parse()
         .unwrap();
+
+    let experience_filepath = get_input("experience_filepath: ");
 
     TrainingOptions {
         game_limit,
         turn_limit,
         save_after_every_nth_game,
+        experience_filepath,
     }
 }
