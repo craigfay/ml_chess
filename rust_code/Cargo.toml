@@ -12,9 +12,7 @@ rand = "0.7"
 serde = "1.0.110"
 ron = "0.5.1"
 
-
-
-[lib]
-name = "ml_chess"
-crate-type = ["cdylib"]
+[[bin]]
+name = "training"
+path = "src/training/main.rs"
 

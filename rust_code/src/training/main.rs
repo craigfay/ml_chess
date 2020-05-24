@@ -1,4 +1,3 @@
-mod vectors;
 
 extern crate rand;
 
@@ -6,7 +5,6 @@ use std::collections::HashMap;
 use rand::Rng;
 
 use chess_engine::*;
-use vectors::*;
 
 // Serialization Libs
 use ron::ser::{to_string_pretty, PrettyConfig};
@@ -198,7 +196,10 @@ impl ChessAgent {
             average_value: (experience.average_value + value) / (experience.times_encountered | 1) as f32,
         };
 
-        self.experiences.insert(hash, revised_experience);
+        // For the time being, we won't remember neutral experiences
+        if revised_experience.average_value != 0.0 || experience.average_value != 0.0 {
+            self.experiences.insert(hash, revised_experience);
+        }
     }
 
     // Policy Function
