@@ -1,13 +1,7 @@
-pub mod vectors;
+mod vectors;
+mod environment;
+mod agent;
 
-pub mod environment;
-
-pub mod agent;
-
-mod training {
-    //use crate::vectors;
-    //use crate::agent;
-    //use crate::environment;
-}
-
+pub use agent::ChessAgent;
+pub use environment::ChessEnvironment;
 

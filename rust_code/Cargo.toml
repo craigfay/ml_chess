@@ -1,5 +1,5 @@
 [package]
-name = "rust_code"
+name = "reinforcement_learning_chess"
 version = "0.1.0"
 authors = ["user"]
 edition = "2018"
@@ -14,5 +14,7 @@ ron = "0.5.1"
 
 [[bin]]
 name = "training"
-path = "src/training/main.rs"
+path = "src/bin/training.rs"
 
+[lib]
+path = "src/lib.rs"

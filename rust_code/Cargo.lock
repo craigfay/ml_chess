@@ -115,6 +115,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "reinforcement_learning_chess"
+version = "0.1.0"
+dependencies = [
+ "chess-engine",
+ "rand",
+ "ron",
+ "serde",
+]
+
+[[package]]
 name = "ron"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -122,16 +132,6 @@ checksum = "2ece421e0c4129b90e4a35b6f625e472e96c552136f5093a2f4fa2bbb75a62d5"
 dependencies = [
  "base64",
  "bitflags",
- "serde",
-]
-
-[[package]]
-name = "rust_code"
-version = "0.1.0"
-dependencies = [
- "chess-engine",
- "rand",
- "ron",
  "serde",
 ]
 

@@ -6,10 +6,7 @@ use ron::ser::{to_string_pretty, PrettyConfig};
 use ron::de::from_str;
 use serde::{Serialize, Deserialize};
 
-
-use crate::vectors::*;
-use crate::agent::*;
-use crate::environment::*;
+use reinforcement_learning_chess::*;
 
 pub struct TrainingOptions {
     pub game_limit: i32,
@@ -51,4 +48,3 @@ pub fn main() {
         turn_limit: 5,
     });
 }
-
