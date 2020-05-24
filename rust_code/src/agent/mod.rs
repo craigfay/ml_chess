@@ -136,7 +136,7 @@ impl ChessAgent {
 
         // Recursion base case
         if environment.is_terminated() {
-            let value = match environment.terminal_state() {
+            let value = match environment.terminal_state(self.playing_as) {
                 TerminalState::Win => 1.0,
                 TerminalState::Loss => -1.0,
                 TerminalState::Draw => 0.0,

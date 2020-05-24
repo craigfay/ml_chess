@@ -47,11 +47,11 @@ impl ChessEnvironment {
         is_checkmate(&self.state) || is_stalemate(&self.state)
     }
 
-    pub fn terminal_state(&self) -> TerminalState {
+    pub fn terminal_state(&self, perspective: Color) -> TerminalState {
         if is_checkmate(&self.state) {
-            return match self.state.to_move {
-                Color::White => TerminalState::Loss,
-                Color::Black => TerminalState::Win,
+            return match self.state.to_move == perspective {
+                false => TerminalState::Win,
+                true => TerminalState::Loss,
             };
         }
         TerminalState::Draw
