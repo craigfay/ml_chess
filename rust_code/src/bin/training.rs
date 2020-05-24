@@ -34,8 +34,13 @@ pub fn training_pipeline(options: TrainingOptions) {
                 break;
             }
             
-            let decision = agent.react(&environment);
-            environment.apply(decision);
+            // Apply the agent's choice
+            let chosen_next_state = agent.react(&environment);
+            environment.apply_change(chosen_next_state);
+
+            // Apply a random choice on behalf of
+            // an imaginary opponent.
+            environment.apply_change_randomly();
         }
     }
 
