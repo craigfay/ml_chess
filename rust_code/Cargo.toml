@@ -18,3 +18,4 @@ path = "src/bin/training.rs"
 
 [lib]
 path = "src/lib.rs"
+
