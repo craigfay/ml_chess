@@ -49,14 +49,12 @@ impl ChessEnvironment {
 
     pub fn terminal_state(&self) -> TerminalState {
         if is_checkmate(&self.state) {
-            if self.state.to_move == Color::White {
-                return TerminalState::Loss;
-            }
-            else {
-                return TerminalState::Win;
-            }
+            return match self.state.to_move {
+                Color::White => TerminalState::Loss,
+                Color::Black => TerminalState::Win,
+            };
         }
-        return TerminalState::Draw;
+        TerminalState::Draw
     }
 }
 
