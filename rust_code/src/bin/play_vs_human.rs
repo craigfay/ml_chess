@@ -9,7 +9,7 @@ use serde::{Serialize, Deserialize};
 use reinforcement_learning_chess::*;
 
 pub struct GameOptions {
-    pub playing_as: Color,
+    pub agent_playing_as: Color,
 }
 
 
@@ -25,7 +25,7 @@ pub fn play_vs_human(options: GameOptions) {
     let mut environment = ChessEnvironment::new();
 
     // Set the agent to play as the correct color
-    agent.playing_as = options.playing_as;
+    agent.playing_as = options.agent_playing_as;
 
 
     // Play until the game is finished
@@ -43,11 +43,20 @@ pub fn play_vs_human(options: GameOptions) {
         println!("{}", environment.state.to_string()); 
     }
 
+    // Print the results of the game. The terminal state
+    // is from the perspective of the agent, but the
+    // terminal output is for the human.
+    match environment.terminal_state(agent.playing_as) {
+        TerminalState::Loss => println!("You win!"),
+        TerminalState::Win => println!("You lose!"),
+        TerminalState::Draw => println!("Draw!"),
+    }
+
     agent.persist_experiences("./experiences.ron");
 }
 
 pub fn main() {
     play_vs_human(GameOptions {
-        playing_as: Color::White,
+        agent_playing_as: Color::White,
     });
 }
