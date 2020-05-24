@@ -204,4 +204,3 @@ fn fill_array_with_new_gamestate_test() {
         assert_eq!(ints[index], expected[index]);
     }
 }
-
