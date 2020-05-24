@@ -16,6 +16,10 @@ ron = "0.5.1"
 name = "training"
 path = "src/bin/training.rs"
 
+[[bin]]
+name = "play_vs_human"
+path = "src/bin/play_vs_human.rs"
+
 [lib]
 path = "src/lib.rs"
 

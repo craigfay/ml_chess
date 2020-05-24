@@ -1,5 +1,5 @@
 
-static DEBUG: bool = true;
+static DEBUG: bool = false;
 
 
 use std::collections::HashMap;
