@@ -2,7 +2,7 @@
 use std::io::{stdin,stdout,Write};
 
 
-pub fn get_input(prompt: String) -> String {
+pub fn get_input(prompt: &str) -> String {
     // Write a prompt to the terminal
     print!("{}", prompt);
 

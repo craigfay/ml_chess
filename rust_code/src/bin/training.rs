@@ -14,6 +14,15 @@ pub struct TrainingOptions {
     pub save_after_every_nth_game: i32,
 }
 
+// TODO prompt for training options
+// TODO multithreading?
+// TODO debug setting
+// TODO reverse gameboard string
+// TODO agent time limit / turn
+// TODO experience filepath as training option
+// TODO use correct fen format, but slice it to use as a hash
+// TODO use experience pruning
+
 pub fn training_pipeline(options: TrainingOptions) {
     // Create an agent, and attempt to restore
     // experiences created by previous training.
@@ -22,6 +31,7 @@ pub fn training_pipeline(options: TrainingOptions) {
 
     // Play until the game limit is reached
     for game_count in 0..options.game_limit {
+
         // Create a new environment, and switch sides
         let mut environment = ChessEnvironment::new();
         agent.playing_as = match agent.playing_as {
@@ -53,9 +63,26 @@ pub fn training_pipeline(options: TrainingOptions) {
 }
 
 pub fn main() {
-    training_pipeline(TrainingOptions {
-        game_limit: 10,
-        turn_limit: 50,
-        save_after_every_nth_game: 5,
-    });
+    let options = prompt_training_options();
+    training_pipeline(options);
+}
+
+fn prompt_training_options() -> TrainingOptions {
+    let game_limit: i32 = get_input("Game limit: ") 
+        .parse()
+        .unwrap();
+
+    let turn_limit: i32 = get_input("Turn limit: ") 
+        .parse()
+        .unwrap();
+
+    let save_after_every_nth_game: i32 = get_input("Save after every nth game: ") 
+        .parse()
+        .unwrap();
+
+    TrainingOptions {
+        game_limit,
+        turn_limit,
+        save_after_every_nth_game,
+    }
 }
