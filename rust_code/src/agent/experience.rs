@@ -4,14 +4,7 @@ use std::path::Path;
 use chess_engine::*;
 use crate::environment::*;
 
-// Serialization Libs
-use ron::ser::{to_string_pretty, PrettyConfig};
-use ron::de::from_str;
-use serde::{Serialize, Deserialize};
-
-
-
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug)]
 pub struct Recollection {
     pub times_encountered: i32,
     pub average_value: f32,
