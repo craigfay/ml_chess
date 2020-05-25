@@ -77,9 +77,13 @@ pub fn play_vs_human(options: GameOptions) {
                 println!();
             }
 
+            println!("\r");
+            println!("\r");
+
             // Apply the chosen move
             let chosen_next_state = legal_inputs.get(&input).unwrap();
             environment.apply_change(*chosen_next_state);
+
 
             println!("{} You played:\n", move_count_display);
             println!("{}\n", environment.state.to_string()); 
