@@ -1,5 +1,6 @@
 
 use std::collections::HashMap;
+use std::path::Path;
 use chess_engine::*;
 use crate::environment::*;
 
@@ -40,10 +41,21 @@ impl Experience {
     }
 
     pub fn value_of(&self, state: &GameState) -> f32 {
-        self.value_map
-            .get(&hash_gamestate(&state))
-            .unwrap_or(&Recollection::new())
-            .average_value
+        let hash = hash_gamestate(&state);
+
+        // Short Term Memory
+        match self.value_map.get(&hash) {
+            Some(rec) => return rec.average_value,
+            None => (),
+        }
+
+        // Long Term Memory
+        match self.long_term_recall(&hash) {
+            Some(rec) => return rec.average_value,
+            None => (),
+        }
+
+        Recollection::new().average_value
     }
 
     pub fn memorize(&mut self, environment: &ChessEnvironment, value: f32) {
@@ -62,13 +74,15 @@ impl Experience {
         // For the time being, we won't remember neutral experiences
         if revised_recollection.average_value != 0.0 || recollection.average_value != 0.0 {
             let hash = hash_gamestate(&environment.state);
-            self.value_map.insert(hash, revised_recollection);
+            self.value_map.insert(hash.to_string(), revised_recollection);
+            self.long_term_memorize(&hash, &revised_recollection);
         }
     }
 
     // Write experiences to file
-    pub fn persist_experiences(&self) {
-        let filename = &self.long_term_memory_directory;
+    pub fn long_term_memorize(&self, hash: &str, rec: &Recollection) {
+        let filename = Path::new(&self.long_term_memory_directory)
+            .join(format!("{}.exp", &hash));
 
         let pretty = PrettyConfig {
             new_line: "\n".to_string(),
@@ -78,19 +92,23 @@ impl Experience {
             enumerate_arrays: true,
         };
 
-        let text = to_string_pretty(&self.value_map, pretty).expect("Serialization failed");
-        std::fs::write(filename, text).expect("Unable to write file");
+        let text = to_string_pretty(&rec, pretty).expect("Serialization failed");
+        std::fs::write(filename.as_os_str(), text).expect("Unable to write file");
     }
     
-    pub fn retrieve_persisted_experiences(&mut self) {
-        let filename = &self.long_term_memory_directory;
+
+    pub fn long_term_recall(&self, hash: &str) -> Option<Recollection> {
+        let filename = Path::new(&self.long_term_memory_directory)
+            .join(format!("{}.exp", &hash));
+
         let text = match std::fs::read_to_string(filename) {
             Ok(t) => t,
-            Err(_) => return,
+            Err(_) => return None,
         };
+
         match from_str(&text) {
-            Ok(map) => self.value_map = map,
-            Err(_) => return,
+            Ok(r) => return Some(r),
+            Err(_) => return None,
         };
     }
 
@@ -101,6 +119,6 @@ impl Experience {
 // the primary obstacle to numeralization is Rust's problem
 // with arrays > 32 elements long.
 pub fn hash_gamestate(state: &GameState) -> String {
-    fen_notation(&state)
+    fen_notation(&state).replace("/", "|")
 }
 
