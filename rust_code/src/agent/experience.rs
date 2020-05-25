@@ -79,37 +79,25 @@ impl Experience {
         }
     }
 
-    // Write experiences to file
+    // Write experiences to .exp file
     pub fn long_term_memorize(&self, hash: &str, rec: &Recollection) {
         let filename = Path::new(&self.long_term_memory_directory)
             .join(format!("{}.exp", &hash));
 
-        let pretty = PrettyConfig {
-            new_line: "\n".to_string(),
-            indentor: "    ".to_string(),
-            depth_limit: 4,
-            separate_tuple_members: true,
-            enumerate_arrays: true,
-        };
-
-        let text = to_string_pretty(&rec, pretty).expect("Serialization failed");
+        let text = format!("{}\n{}", rec.times_encountered, rec.average_value);
         std::fs::write(filename.as_os_str(), text).expect("Unable to write file");
     }
     
 
+    // Attempt to recall a Recollection from an .exp file
     pub fn long_term_recall(&self, hash: &str) -> Option<Recollection> {
         let filename = Path::new(&self.long_term_memory_directory)
             .join(format!("{}.exp", &hash));
 
-        let text = match std::fs::read_to_string(filename) {
-            Ok(t) => t,
-            Err(_) => return None,
-        };
-
-        match from_str(&text) {
-            Ok(r) => return Some(r),
-            Err(_) => return None,
-        };
+        match std::fs::read_to_string(filename) {
+            Ok(text) => parse_exp_file(&text),
+            Err(_) => None,
+        }
     }
 
 }
@@ -120,5 +108,45 @@ impl Experience {
 // with arrays > 32 elements long.
 pub fn hash_gamestate(state: &GameState) -> String {
     fen_notation(&state).replace("/", "|")
+}
+
+// .exp files are a representation of a Recollection
+// struct, with times_encountered on the first line,
+// and average_value on the second.
+pub fn parse_exp_file(text: &str) -> Option<Recollection> {
+    let mut lines = text.split("\n");
+    let maybe_line_1 = lines.next();
+    let maybe_line_2 = lines.next();
+
+    let mut line_1 = "";
+    let mut line_2 = "";
+
+    match maybe_line_1 {
+        Some(line) => line_1 = line,
+        _ => return None,
+    };
+
+    match maybe_line_2 {
+        Some(line) => line_2 = line,
+        _ => return None,
+    };
+
+    let mut times_encountered: i32 = 0;
+    let mut average_value: f32 = 0.0;
+
+    match line_1.parse::<i32>() {
+        Ok(i) => times_encountered = i,
+        Err(_) => return None,
+    };
+
+    match line_2.parse::<f32>() {
+        Ok(f) => average_value = f,
+        Err(_) => return None,
+    };
+
+    Some(Recollection {
+        times_encountered,
+        average_value,
+    })
 }
 
