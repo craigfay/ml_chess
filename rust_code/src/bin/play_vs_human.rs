@@ -4,12 +4,6 @@ use reinforcement_learning_chess::*;
 
 use std::collections::HashMap;
 
-// Serialization Libs
-use ron::ser::{to_string_pretty, PrettyConfig};
-use ron::de::from_str;
-use serde::{Serialize, Deserialize};
-
-
 pub struct GameOptions {
     pub agent_playing_as: Color,
 }
@@ -20,8 +14,6 @@ pub fn play_vs_human(options: GameOptions) {
     // Create an agent, and attempt to restore
     // experiences created by previous training.
     let mut agent = ChessAgent::new();
-    agent.retrieve_persisted_experiences("./experiences.ron");
-
 
     // Create a new game environment
     let mut environment = ChessEnvironment::new();
@@ -77,9 +69,13 @@ pub fn play_vs_human(options: GameOptions) {
                 println!();
             }
 
+            println!("\r");
+            println!("\r");
+
             // Apply the chosen move
             let chosen_next_state = legal_inputs.get(&input).unwrap();
             environment.apply_change(*chosen_next_state);
+
 
             println!("{} You played:\n", move_count_display);
             println!("{}\n", environment.state.to_string()); 
@@ -94,8 +90,6 @@ pub fn play_vs_human(options: GameOptions) {
         TerminalState::Win => println!("You lose!"),
         TerminalState::Draw => println!("Draw!"),
     }
-
-    agent.persist_experiences("./experiences.ron");
 }
 
 pub fn main() {

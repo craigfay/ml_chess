@@ -1,21 +1,17 @@
 
-static DEBUG: bool = false;
+static DEBUG: bool = true;
 
 
-use std::collections::HashMap;
 use rand::Rng;
 use chess_engine::*;
 use crate::environment::*;
 
-
-// Serialization Libs
-use ron::ser::{to_string_pretty, PrettyConfig};
-use ron::de::from_str;
-use serde::{Serialize, Deserialize};
+mod experience;
+use experience::Experience;
 
 pub struct ChessAgent {
     pub playing_as: Color,
-    pub experiences: HashMap<String, Experience>,
+    pub experience: Experience,
     pub last_decision: GameState,
     pub foresight: i32,
     pub discount: f32,
@@ -23,35 +19,11 @@ pub struct ChessAgent {
     pub exploration_propensity: f32,
 }
 
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
-pub struct Experience {
-    pub times_encountered: i32,
-    pub average_value: f32,
-}
-
-impl Experience {
-    fn new() -> Experience {
-        Experience {
-            times_encountered: 0,
-            average_value: 0.0,
-        }
-    }
-}
-
-// Eventually, it would be better to use a numeralized
-// gamestate, or PGN chess notation as the hash. For now,
-// the primary obstacle to numeralization is Rust's problem
-// with arrays > 32 elements long.
-pub fn hash_gamestate(state: &GameState) -> String {
-    fen_notation(&state)
-}
-
-
 impl ChessAgent {
     pub fn new() -> ChessAgent {
         ChessAgent {
             playing_as: Color::White,
-            experiences: HashMap::new(),
+            experience: Experience::new("./experience"),
             last_decision: GameState::new(),
             foresight: 4,
             discount: 0.9,
@@ -71,41 +43,14 @@ impl ChessAgent {
 
     pub fn rank_confidence_in_positions(&self, positions: &mut Vec<GameState>) {
         positions.sort_by(|a, b| {
-            let hashed_a = hash_gamestate(&a);
-            let hashed_b = hash_gamestate(&b);
-
-            let value_a = self.experiences.get(&hashed_a).unwrap_or(&Experience::new()).average_value;
-            let value_b = self.experiences.get(&hashed_b).unwrap_or(&Experience::new()).average_value;
+            let value_a = self.experience.value_of(&a);
+            let value_b = self.experience.value_of(&b);
 
             match self.playing_as {
                 Color::White => value_a.partial_cmp(&value_b).unwrap(),
                 Color::Black => value_b.partial_cmp(&value_a).unwrap(),
             }
         })
-    }
-
-    pub fn recall_experience(&self, environment: &ChessEnvironment) -> Experience {
-        let hash = hash_gamestate(&environment.state);
-        match self.experiences.get(&hash) {
-            None => Experience::new(),
-            Some(experience) => *experience,
-        }
-    }
-
-    pub fn memorize_experience(&mut self, environment: &ChessEnvironment, value: f32) {
-        let hash = hash_gamestate(&environment.state);
-        let experience = &self.recall_experience(&environment);
-
-        let revised_experience = Experience {
-            times_encountered: experience.times_encountered + 1,
-            // Use bitwise or to prevent dividing by zero
-            average_value: (experience.average_value + value) / (experience.times_encountered | 1) as f32,
-        };
-
-        // For the time being, we won't remember neutral experiences
-        if revised_experience.average_value != 0.0 || experience.average_value != 0.0 {
-            self.experiences.insert(hash, revised_experience);
-        }
     }
 
     // Policy Function
@@ -182,7 +127,7 @@ impl ChessAgent {
         };
 
         // The value of the current state, discounting for distance into the future
-        let expected_value = self.recall_experience(environment).average_value;
+        let expected_value = self.experience.value_of(&environment.state);
         let discounted_value = expected_value * self.discount.powf(depth as f32);
 
         // Define the current value in terms of the value of the next state
@@ -194,7 +139,6 @@ impl ChessAgent {
             // Print Debugging Info
             println!("#{}", self.positions_evaluated);
             println!("{}", environment.state.to_string());
-            println!("{}", hash_gamestate(&environment.state));
 
             println!("W/B Material: {}/{}", white_score, black_score);
             println!("expected_value: {}", expected_value);
@@ -202,7 +146,7 @@ impl ChessAgent {
             println!("recursive_value: {}\n", value);
         }
 
-        self.memorize_experience(&environment, value);
+        self.experience.memorize(&environment, value);
         value
     }
 
@@ -211,31 +155,6 @@ impl ChessAgent {
             Color::White => value,
             Color::Black => value * -1.0,
         }
-    }
-
-    // Write experiences to file
-    pub fn persist_experiences(&self, filename: &str) {
-        let pretty = PrettyConfig {
-            new_line: "\n".to_string(),
-            indentor: "    ".to_string(),
-            depth_limit: 4,
-            separate_tuple_members: true,
-            enumerate_arrays: true,
-        };
-
-        let text = to_string_pretty(&self.experiences, pretty).expect("Serialization failed");
-        std::fs::write(filename, text).expect("Unable to write file");
-    }
-    
-    pub fn retrieve_persisted_experiences(&mut self, filename: &str) {
-        let text = match std::fs::read_to_string(filename) {
-            Ok(t) => t,
-            Err(_) => return,
-        };
-        match from_str(&text) {
-            Ok(exp) => self.experiences = exp,
-            Err(_) => return,
-        };
     }
 }
 
