@@ -20,8 +20,6 @@ pub fn play_vs_human(options: GameOptions) {
     // Create an agent, and attempt to restore
     // experiences created by previous training.
     let mut agent = ChessAgent::new();
-    agent.retrieve_persisted_experiences("./experiences.ron");
-
 
     // Create a new game environment
     let mut environment = ChessEnvironment::new();
@@ -98,8 +96,6 @@ pub fn play_vs_human(options: GameOptions) {
         TerminalState::Win => println!("You lose!"),
         TerminalState::Draw => println!("Draw!"),
     }
-
-    agent.persist_experiences("./experiences.ron");
 }
 
 pub fn main() {
