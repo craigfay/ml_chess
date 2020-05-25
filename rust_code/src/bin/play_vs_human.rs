@@ -29,18 +29,38 @@ pub fn play_vs_human(options: GameOptions) {
     // Set the agent to play as the correct color
     agent.playing_as = options.agent_playing_as;
 
+    let mut move_count = 0;
+    let mut move_count_display = String::new();
+
+    println!("\nNew Game:\n");
+    println!("{}\n", environment.state.to_string()); 
+
 
     // Play until the game is finished
     while false ==  environment.is_terminated() {
 
-        println!("{}", environment.state.to_string()); 
+        // Increment move_count
+        match environment.state.to_move {
+            Color::White => {
+                move_count += 1;
+                move_count_display = format!("{}.", move_count);
+            },
+            Color::Black => {
+                move_count_display = format!("{}...", move_count);
+            }
+        }
 
+        // Agent's turn to move
         if environment.state.to_move == agent.playing_as {
             let chosen_next_state = agent.react(&environment);
             environment.apply_change(chosen_next_state);
+
+            println!("{} Agent played:\n", move_count_display);
+            println!("{}\n", environment.state.to_string()); 
         }
 
         else {
+            // Human's turn to move
             // Build a map of legal actions
             let mut legal_inputs: HashMap<String, GameState> = HashMap::new();
             legal_actions(&environment.state).iter().for_each(|s| {
@@ -61,6 +81,8 @@ pub fn play_vs_human(options: GameOptions) {
             let chosen_next_state = legal_inputs.get(&input).unwrap();
             environment.apply_change(*chosen_next_state);
 
+            println!("{} You played:\n", move_count_display);
+            println!("{}\n", environment.state.to_string()); 
         }
     }
 
@@ -81,3 +103,4 @@ pub fn main() {
         agent_playing_as: Color::White,
     });
 }
+
