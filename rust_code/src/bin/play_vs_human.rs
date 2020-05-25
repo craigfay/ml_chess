@@ -1,12 +1,14 @@
 
 use chess_engine::*;
+use reinforcement_learning_chess::*;
+
+use std::collections::HashMap;
 
 // Serialization Libs
 use ron::ser::{to_string_pretty, PrettyConfig};
 use ron::de::from_str;
 use serde::{Serialize, Deserialize};
 
-use reinforcement_learning_chess::*;
 
 pub struct GameOptions {
     pub agent_playing_as: Color,
@@ -31,19 +33,35 @@ pub fn play_vs_human(options: GameOptions) {
     // Play until the game is finished
     while false ==  environment.is_terminated() {
 
+        println!("{}", environment.state.to_string()); 
+
         if environment.state.to_move == agent.playing_as {
             let chosen_next_state = agent.react(&environment);
             environment.apply_change(chosen_next_state);
         }
 
         else {
-            get_input("Choose your move: ");
-            println!();
+            // Build a map of legal actions
+            let mut legal_inputs: HashMap<String, GameState> = HashMap::new();
+            legal_actions(&environment.state).iter().for_each(|s| {
+                let notation = s.as_algebraic_notation(&environment.state);
+                let leads_to_state = s.apply(&environment.state);
+                legal_inputs.insert(notation, leads_to_state);
+            });
 
-            environment.apply_change_randomly();
+            // Ask the player to chose a move
+            let mut input = String::new();
+            while !legal_inputs.contains_key(&input) {
+                println!("Legal moves: {:?}", legal_inputs.keys());
+                input = get_input("Choose your move: ");
+                println!();
+            }
+
+            // Apply the chosen move
+            let chosen_next_state = legal_inputs.get(&input).unwrap();
+            environment.apply_change(*chosen_next_state);
+
         }
-
-        println!("{}", environment.state.to_string()); 
     }
 
     // Print the results of the game. The terminal state

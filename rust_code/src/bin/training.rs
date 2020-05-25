@@ -15,12 +15,9 @@ pub struct TrainingOptions {
     pub experience_filepath: String,
 }
 
-// TODO prompt for training options
-// TODO multithreading?
 // TODO debug setting
 // TODO reverse gameboard string
 // TODO agent time limit / turn
-// TODO experience filepath as training option
 // TODO use correct fen format, but slice it to use as a hash
 // TODO use experience pruning
 
