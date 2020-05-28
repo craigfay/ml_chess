@@ -9,6 +9,8 @@ edition = "2018"
 [dependencies]
 chess-engine = { git = "https://github.com/craigfay/chess-engine" }
 rand = "0.7"
+serde = "1.0.110"
+ron = "0.5.1"
 
 [[bin]]
 name = "training"

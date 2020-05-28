@@ -19,6 +19,7 @@ pub fn training_pipeline(options: TrainingOptions) {
     // Create an agent, and attempt to restore
     // experiences created by previous training.
     let mut agent = ChessAgent::new();
+    agent.experience.long_term_recall();
 
     // Play until the game limit is reached
     for game_count in 0..options.game_limit {
@@ -44,6 +45,8 @@ pub fn training_pipeline(options: TrainingOptions) {
             // an imaginary opponent.
             environment.apply_change_randomly();
         }
+
+        agent.experience.long_term_memorize();
     }
 }
 

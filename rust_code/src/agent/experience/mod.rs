@@ -1,4 +1,5 @@
 
 mod flat;
+mod serialized;
 
-pub use flat::*;
+pub use serialized::*;
