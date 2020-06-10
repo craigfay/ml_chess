@@ -14,7 +14,6 @@ use chess_engine::{
         Black,
         White,
     },
-    legal_next_states,
     is_checkmate,
     is_stalemate,
     relative_material_values,

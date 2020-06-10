@@ -111,8 +111,8 @@ pub fn parse_exp_file(text: &str) -> Option<Recollection> {
     let maybe_line_1 = lines.next();
     let maybe_line_2 = lines.next();
 
-    let mut line_1 = "";
-    let mut line_2 = "";
+    let line_1;
+    let line_2;
 
     match maybe_line_1 {
         Some(line) => line_1 = line,
@@ -124,7 +124,7 @@ pub fn parse_exp_file(text: &str) -> Option<Recollection> {
         _ => return None,
     };
 
-    let mut times_encountered: i32 = 0;
+    let times_encountered;
     let average_value;
 
     match line_1.parse::<i32>() {
