@@ -125,7 +125,7 @@ pub fn parse_exp_file(text: &str) -> Option<Recollection> {
     };
 
     let mut times_encountered: i32 = 0;
-    let mut average_value: f32 = 0.0;
+    let average_value;
 
     match line_1.parse::<i32>() {
         Ok(i) => times_encountered = i,

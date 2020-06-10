@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 mod vectors;
 mod agent;
 mod environment;

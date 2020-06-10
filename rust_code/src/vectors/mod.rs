@@ -125,6 +125,7 @@ fn piece_as_int(maybe_piece: Option<Piece>) -> i32 {
     }
 }
 
+#[allow(dead_code)]
 fn int_as_piece(int: i32) -> Option<Piece> {
     match int {
         1 => Some(Piece { color: White, name: Pawn }),

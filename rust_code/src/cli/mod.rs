@@ -8,7 +8,7 @@ pub fn get_input(prompt: &str) -> String {
 
     // Read a line of input from the terminal
     let mut input = String::new();
-    stdout().flush();
+    stdout().flush().expect("Could not flush stdout");
     stdin().read_line(&mut input).expect("Invalid Input!");
 
     // Pop off newline characters

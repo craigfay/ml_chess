@@ -22,7 +22,7 @@ pub fn training_pipeline(options: TrainingOptions) {
     agent.experience.long_term_recall();
 
     // Play until the game limit is reached
-    for game_count in 0..options.game_limit {
+    for _ in 0..options.game_limit {
 
         // Create a new environment, and switch sides
         let mut environment = ChessEnvironment::new();
