@@ -21,7 +21,8 @@ impl Recollection {
 
 pub struct Experience {
     long_term_memory_directory: String,
-    value_map: HashMap<String, Recollection>
+    value_map: HashMap<String, Recollection>,
+    purge_threshold: i32,
 }
 
 
@@ -30,6 +31,7 @@ impl Experience {
         Experience {
             long_term_memory_directory: filename.to_string(),
             value_map: HashMap::new(),
+            purge_threshold: 100_000,
         }
     }
 

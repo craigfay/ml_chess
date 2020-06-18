@@ -17,6 +17,7 @@ pub struct ChessAgent {
     pub discount: f32,
     pub positions_evaluated: i32,
     pub exploration_propensity: f32,
+    pub purge_threshold: i32,
 }
 
 impl ChessAgent {
@@ -29,6 +30,7 @@ impl ChessAgent {
             discount: 0.9,
             positions_evaluated: 0,
             exploration_propensity: 0.5,
+            purge_threshold: 100_000,
         }
     }
 
