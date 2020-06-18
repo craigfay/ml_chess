@@ -95,6 +95,17 @@ impl Experience {
         }
     }
 
+    pub fn purge_weak_memories(&mut self) {
+        let mut hashes: Vec<String> = self.value_map.keys().map(|hash| hash.clone()).collect();
+
+        hashes.sort_by(|a, b| {
+            let a_encounters = &self.value_map.get(a).unwrap().times_encountered;
+            let b_encounters = &self.value_map.get(b).unwrap().times_encountered;
+
+            a_encounters.partial_cmp(&b_encounters).unwrap()
+        })
+    }
+
 }
 
 // Eventually, it would be better to use a numeralized
