@@ -103,7 +103,12 @@ impl Experience {
             let b_encounters = &self.value_map.get(b).unwrap().times_encountered;
 
             a_encounters.partial_cmp(&b_encounters).unwrap()
-        })
+        });
+
+        while hashes.len() as i32 > self.purge_threshold {
+            let hash = hashes.pop().unwrap();
+            self.value_map.remove(&hash);
+        }
     }
 
 }
