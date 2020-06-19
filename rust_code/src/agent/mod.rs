@@ -5,6 +5,7 @@ static DEBUG: bool = false;
 use rand::Rng;
 use chess_engine::*;
 use crate::environment::*;
+use std::collections::HashMap;
 
 mod experience;
 use experience::Experience;
@@ -24,7 +25,11 @@ impl ChessAgent {
     pub fn new() -> ChessAgent {
         ChessAgent {
             playing_as: Color::White,
-            experience: Experience::new("./experience"),
+            experience: Experience {
+                long_term_memory_file: "./experience".to_string(),
+                value_map: HashMap::new(),
+                memory_purge_threshold: 5,
+            },
             last_decision: GameState::new(),
             foresight: 4,
             discount: 0.9,
