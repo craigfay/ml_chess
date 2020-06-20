@@ -22,7 +22,8 @@ pub fn training_pipeline(options: TrainingOptions) {
     agent.experience.long_term_recall();
 
     // Play until the game limit is reached
-    for _ in 0..options.game_limit {
+    for game_count in 0..options.game_limit {
+
 
         // Create a new environment, and switch sides
         let mut environment = ChessEnvironment::new();
@@ -46,6 +47,10 @@ pub fn training_pipeline(options: TrainingOptions) {
             environment.apply_change_randomly();
         }
 
+        if agent.experience.len() >= agent.memory_purge_threshold {
+            agent.experience.purge_weak_memories();
+        }
+    
         agent.experience.long_term_memorize();
     }
 }

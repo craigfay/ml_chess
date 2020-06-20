@@ -18,7 +18,7 @@ pub struct ChessAgent {
     pub discount: f32,
     pub positions_evaluated: i32,
     pub exploration_propensity: f32,
-    pub purge_threshold: i32,
+    pub memory_purge_threshold: usize,
 }
 
 impl ChessAgent {
@@ -28,14 +28,14 @@ impl ChessAgent {
             experience: Experience {
                 long_term_memory_file: "./experience".to_string(),
                 value_map: HashMap::new(),
-                memory_purge_threshold: 5,
+                memory_purge_threshold: 100_000,
             },
             last_decision: GameState::new(),
             foresight: 4,
             discount: 0.9,
             positions_evaluated: 0,
             exploration_propensity: 0.5,
-            purge_threshold: 100_000,
+            memory_purge_threshold: 100_000,
         }
     }
 
